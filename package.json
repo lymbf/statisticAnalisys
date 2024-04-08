@@ -1,0 +1,29 @@
+{
+   "name": "statisticanalisys",
+   "version": "1.0.0",
+   "description": "libs for statistical anlisys of market data#",
+   "main": "index.js",
+   "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/lymbf/statisticAnalisys.git"
+   },
+   "keywords": [
+      "statistic",
+      "algorythms",
+      "quant",
+      "programming",
+      "discretional"
+   ],
+   "author": "Pawel Czekaj",
+   "license": "ISC",
+   "bugs": {
+      "url": "https://github.com/lymbf/statisticAnalisys/issues"
+   },
+   "homepage": "https://github.com/lymbf/statisticAnalisys#readme",
+   "devDependencies": {
+      "@types/node": "^20.12.5"
+   }
+}
