@@ -4,19 +4,15 @@ import {fetchData} from "./Fetch/fetch";
 import {
     CandleIndexArray,
     checkFollowUpRangeChange,
-    findCandlesByChange
+    findCandlesByChange, getFollowUpRangeMap
 } from "./Main/Libs/ChangeAnalisys/changeFollowup";
 import {getOCChange} from "./Libs/Tools/candleOps";
+import {FollowUpRangeMap} from "./Interfaces/FollowUpRange";
 
 console.log(DATASETS_PATH)
 
 let data: RawData = fetchData('QQQ', '1D')
 
-let res: CandleIndexArray[] = findCandlesByChange(data, 2, 'GREATER');
-res = res.slice(res.length - 5, res.length)
-console.log(new Date(res[0][0][0] * 1000).toLocaleString())
-console.log(res.map(el => {
-    return getOCChange(el[0])
-}))
+let res: FollowUpRangeMap = getFollowUpRangeMap(data, 5, 2, 'GREATER');
+console.log('res: ', res)
 
-console.log(checkFollowUpRangeChange(data, res[0], 5))

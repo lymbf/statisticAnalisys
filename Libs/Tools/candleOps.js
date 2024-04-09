@@ -42,7 +42,6 @@ function rangeToOHLC(arr, se) {
         ohlc[2] = ohlc[2] !== 0 ? Math.min(ohlc[2], arr[i][3]) : arr[i][3];
         ohlc[1] = Math.max(ohlc[1], arr[i][2]);
     }
-    console.log('range to ohlc: ', __spreadArray([0], ohlc, true));
     return __spreadArray([0], ohlc, true);
 }
 exports.rangeToOHLC = rangeToOHLC;

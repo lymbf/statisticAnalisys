@@ -1,7 +1,11 @@
 import {Candle} from "../../../Interfaces/Candle";
 import {getOCChange, rangeToOHLC} from "../../../Libs/Tools/candleOps";
+import {FollowUpRangeMap} from "../../../Interfaces/FollowUpRange";
+import * as fs from "fs";
+import * as path from "path";
 
 type CandleIndexArray = [Candle, number]
+
 
 // greater: 'GREATER' || 'LESSER'
 function findCandlesByChange(arr: Candle[], change: number, greater: string): CandleIndexArray[] {
@@ -31,4 +35,14 @@ function checkFollowUpRangeChange(data: Candle[], candle: CandleIndexArray, dist
     return getOCChange(rangeToOHLC(data, [i, i + distance]))
 }
 
-export {CandleIndexArray, findCandlesByChange, checkFollowUpRangeChange}
+function getFollowUpRangeMap(data: Candle[], distance: number, change: number, greater: string): FollowUpRangeMap {
+    let candles: CandleIndexArray[] = findCandlesByChange(data, change, greater);
+    let res: FollowUpRangeMap = [];
+    candles.forEach(candle => {
+        res.push(checkFollowUpRangeChange(data, candle, distance))
+    })
+    fs.writeFileSync(path.join(__dirname, 'Temp/changeFollowup.json'), JSON.stringify(res))
+    return res;
+}
+
+export {CandleIndexArray, findCandlesByChange, checkFollowUpRangeChange, getFollowUpRangeMap}
