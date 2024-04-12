@@ -27,7 +27,7 @@ function getRollingVolatilityMap(arr: Candle[], distance: number): VolatilityMap
         let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
             return getATRChange(c)
         })
-        res.push([arr[i][0] * 1000, mean(temp)])
+        res.push([arr[i][0], mean(temp)])
     }
     return res;
 }
@@ -36,7 +36,7 @@ function getVolatility(arr: Candle[], i: number, distance: number): Volatility {
     let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
         return getATRChange(c)
     })
-    return [arr[i][0] * 1000, mean(temp)]
+    return [arr[i][0], mean(temp)]
 }
 
 let data: RawData = fetchData('DAX', '1D');
