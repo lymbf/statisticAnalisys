@@ -33,6 +33,26 @@ function getATRChange(candle) {
     return (0, myMath_1.getChange)(l, h);
 }
 exports.getATRChange = getATRChange;
+function getHigh(candle) {
+    var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
+    return h;
+}
+function getLow(candle) {
+    var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
+    return h;
+}
+function getOpen(candle) {
+    var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
+    return o;
+}
+function getClose(candle) {
+    var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
+    return c;
+}
+function getTime(candle) {
+    var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
+    return t * 1000;
+}
 function rangeToOHLC(arr, se) {
     var s = se[0], e = se[1];
     var ohlc = [0, 0, 0, 0];
