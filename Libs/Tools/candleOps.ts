@@ -23,6 +23,31 @@ function getATRChange(candle: Candle): number {
     return getChange(l, h)
 }
 
+function getHigh(candle: Candle): number {
+    let [t, o, h, l, c] = candle;
+    return h;
+}
+
+function getLow(candle: Candle): number {
+    let [t, o, h, l, c] = candle;
+    return h;
+}
+
+function getOpen(candle: Candle): number {
+    let [t, o, h, l, c] = candle;
+    return o;
+}
+
+function getClose(candle: Candle): number {
+    let [t, o, h, l, c] = candle;
+    return c;
+}
+
+function getTime(candle: Candle): number {
+    let [t, o, h, l, c] = candle;
+    return t * 1000;
+}
+
 function rangeToOHLC(arr: Candle[], se: [start: number, end: number]): Candle {
     let [s, e] = se;
 
