@@ -17,3 +17,4 @@ function getAverageWMapper(arr, f) {
     return parseFloat((data.reduce(function (a, b) { return a + b; }, 0) / arr.length).toFixed(6));
 }
 exports.getAverageWMapper = getAverageWMapper;
+console.log(getChange(12, 18));

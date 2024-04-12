@@ -25,5 +25,8 @@
    "homepage": "https://github.com/lymbf/statisticAnalisys#readme",
    "devDependencies": {
       "@types/node": "^20.12.5"
+   },
+   "dependencies": {
+      "mathjs": "^12.4.1"
    }
 }

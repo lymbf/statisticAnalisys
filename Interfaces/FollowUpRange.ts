@@ -1,4 +1,4 @@
-type FollowUpRangeMap = number[];
-type DistanceMapOfFollowUpRange = FollowUpRangeMap[];
+type RangeMap = number[];
+type DistanceMapOfFollowUpRange = RangeMap[];
 
-export {FollowUpRangeMap, DistanceMapOfFollowUpRange}
+export {RangeMap, DistanceMapOfFollowUpRange}

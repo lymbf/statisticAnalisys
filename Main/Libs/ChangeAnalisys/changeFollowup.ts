@@ -1,8 +1,10 @@
-import {Candle} from "../../../Interfaces/Candle";
+import {Candle, RawData} from "../../../Interfaces/Candle";
 import {getOCChange, rangeToOHLC} from "../../../Libs/Tools/candleOps";
-import {FollowUpRangeMap} from "../../../Interfaces/FollowUpRange";
+import {RangeMap} from "../../../Interfaces/FollowUpRange";
 import * as fs from "fs";
 import * as path from "path";
+import {fetchData} from "../../../Fetch/fetch";
+import * as Mathjs from 'mathjs'
 
 type CandleIndexArray = [Candle, number]
 
@@ -26,23 +28,70 @@ function findCandlesByChange(arr: Candle[], change: number, greater: string): Ca
                 break;
         }
     }
-    return res;
+    let br: number = 1000 * 60 * 60 * 24 * 5
+    return res.filter((el, i, arr) => {
+        if (i === 0) return true
+        return !((el[0][0] * 1000 - br) < arr[i - 1][0][0] * 1000)
+    })
 }
 
 function checkFollowUpRangeChange(data: Candle[], candle: CandleIndexArray, distance: number): number {
     let i: number = candle[1];
-    let range = data.slice(i + 1, distance);
-    return getOCChange(rangeToOHLC(data, [i, i + distance]))
+    return getOCChange(rangeToOHLC(data, [i + 1, i + distance]))
 }
 
-function getFollowUpRangeMap(data: Candle[], distance: number, change: number, greater: string): FollowUpRangeMap {
+function checkPreviousRangeChange(data: Candle[], candle: CandleIndexArray, distance: number): number {
+    let i: number = candle[1];
+    return getOCChange(rangeToOHLC(data, [i - distance, i]))
+}
+
+function getFollowUpRangeMap(data: Candle[], distance: number, change: number, greater: string): RangeMap {
     let candles: CandleIndexArray[] = findCandlesByChange(data, change, greater);
-    let res: FollowUpRangeMap = [];
+    let res: RangeMap = [];
     candles.forEach(candle => {
         res.push(checkFollowUpRangeChange(data, candle, distance))
     })
     fs.writeFileSync(path.join(__dirname, 'Temp/changeFollowup.json'), JSON.stringify(res))
     return res;
 }
+
+function getDatesMap(data: Candle[], change: number, greater: string): string[] {
+    let r: string[] = findCandlesByChange(data, change, greater).map((el: CandleIndexArray) => {
+        return new Date(el[0][0] * 1000).toLocaleDateString()
+    });
+    fs.writeFileSync(path.join(__dirname, 'Temp/dates.json'), JSON.stringify(r));
+    return r;
+}
+
+// function getSignalDates()
+let distance: number = 7;
+let change: number = 1;
+let greater: string = 'GREATER'
+
+let data: RawData = fetchData('DAX', '1D');
+console.log(new Date(data[0][0] * 1000).toLocaleString())
+console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
+// let res: RangeMap = getFollowUpRangeMap(data, distance, change, greater);
+// let dates: string[] = getDatesMap(data, change, greater)
+// console.log('length: ', res.length)
+// console.log('avg: ', Mathjs.mean(res))
+
+for (let i: number = 1; i < 8; i++) {
+    for (let j: number = 0.5; j < 2.5; j += 0.25) {
+        console.log('------>>>><<<<<<<-----')
+        console.log('distance: ', i, 'signal change: ', j);
+        let r = getFollowUpRangeMap(data, i, j, greater)
+        r.length && console.log(Mathjs.mean(r))
+        r.length && console.log('length: ', r.length, 'probability: ', r.map((el: number): number => {
+            return el > 0 ? 1 : 0
+        }).reduce((acc: number, curr: number) => {
+            return acc + curr
+        }, 0) / r.length
+        )
+        console.log('------>>>><<<<<<<-----')
+    }
+}
+// console.log('res: ', res)
+// console.log('dates: ', dates)
 
 export {CandleIndexArray, findCandlesByChange, checkFollowUpRangeChange, getFollowUpRangeMap}

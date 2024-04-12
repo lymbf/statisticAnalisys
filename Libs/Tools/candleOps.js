@@ -36,12 +36,17 @@ exports.getATRChange = getATRChange;
 function rangeToOHLC(arr, se) {
     var s = se[0], e = se[1];
     var ohlc = [0, 0, 0, 0];
+    if (e >= arr.length)
+        return __spreadArray([0], ohlc, true);
     for (var i = s; i < e + 1; i++) {
         i === e && (ohlc[3] = arr[i][4]);
         i === s && (ohlc[0] = arr[i][1]);
         ohlc[2] = ohlc[2] !== 0 ? Math.min(ohlc[2], arr[i][3]) : arr[i][3];
         ohlc[1] = Math.max(ohlc[1], arr[i][2]);
     }
+    // console.log('signal: ', new Date(arr[s - 1][0] * 1000))
+    // console.log('date: ', new Date(arr[s - 1][0] * 1000).toLocaleDateString())
+    // console.log('range: ', [0, ...ohlc])
     return __spreadArray([0], ohlc, true);
 }
 exports.rangeToOHLC = rangeToOHLC;

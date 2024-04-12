@@ -4,6 +4,8 @@ exports.getFollowUpRangeMap = exports.checkFollowUpRangeChange = exports.findCan
 var candleOps_1 = require("../../../Libs/Tools/candleOps");
 var fs = require("fs");
 var path = require("path");
+var fetch_1 = require("../../../Fetch/fetch");
+var Mathjs = require("mathjs");
 // greater: 'GREATER' || 'LESSER'
 function findCandlesByChange(arr, change, greater) {
     var res = [];
@@ -23,15 +25,23 @@ function findCandlesByChange(arr, change, greater) {
                 break;
         }
     }
-    return res;
+    var br = 1000 * 60 * 60 * 24 * 5;
+    return res.filter(function (el, i, arr) {
+        if (i === 0)
+            return true;
+        return !((el[0][0] * 1000 - br) < arr[i - 1][0][0] * 1000);
+    });
 }
 exports.findCandlesByChange = findCandlesByChange;
 function checkFollowUpRangeChange(data, candle, distance) {
     var i = candle[1];
-    var range = data.slice(i + 1, distance);
-    return (0, candleOps_1.getOCChange)((0, candleOps_1.rangeToOHLC)(data, [i, i + distance]));
+    return (0, candleOps_1.getOCChange)((0, candleOps_1.rangeToOHLC)(data, [i + 1, i + distance]));
 }
 exports.checkFollowUpRangeChange = checkFollowUpRangeChange;
+function checkPreviousRangeChange(data, candle, distance) {
+    var i = candle[1];
+    return (0, candleOps_1.getOCChange)((0, candleOps_1.rangeToOHLC)(data, [i - distance, i]));
+}
 function getFollowUpRangeMap(data, distance, change, greater) {
     var candles = findCandlesByChange(data, change, greater);
     var res = [];
@@ -42,3 +52,35 @@ function getFollowUpRangeMap(data, distance, change, greater) {
     return res;
 }
 exports.getFollowUpRangeMap = getFollowUpRangeMap;
+function getDatesMap(data, change, greater) {
+    var r = findCandlesByChange(data, change, greater).map(function (el) {
+        return new Date(el[0][0] * 1000).toLocaleDateString();
+    });
+    fs.writeFileSync(path.join(__dirname, 'Temp/dates.json'), JSON.stringify(r));
+    return r;
+}
+// function getSignalDates()
+var distance = 7;
+var change = 1;
+var greater = 'GREATER';
+var data = (0, fetch_1.fetchData)('DAX', '1D');
+console.log(new Date(data[0][0] * 1000).toLocaleString());
+console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString());
+// let res: RangeMap = getFollowUpRangeMap(data, distance, change, greater);
+// let dates: string[] = getDatesMap(data, change, greater)
+// console.log('length: ', res.length)
+// console.log('avg: ', Mathjs.mean(res))
+for (var i = 1; i < 8; i++) {
+    for (var j = 0.5; j < 2.5; j += 0.25) {
+        console.log('------>>>><<<<<<<-----');
+        console.log('distance: ', i, 'signal change: ', j);
+        var r = getFollowUpRangeMap(data, i, j, greater);
+        r.length && console.log(Mathjs.mean(r));
+        r.length && console.log('length: ', r.length, 'probability: ', r.map(function (el) {
+            return el > 0 ? 1 : 0;
+        }).reduce(function (acc, curr) {
+            return acc + curr;
+        }, 0) / r.length);
+        console.log('------>>>><<<<<<<-----');
+    }
+}

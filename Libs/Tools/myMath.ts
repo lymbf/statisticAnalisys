@@ -17,4 +17,5 @@ function getAverageWMapper(arr: Candle[], f: CandleToNumberMapper) {
     return parseFloat((data.reduce((a, b) => a + b, 0) / arr.length).toFixed(6))
 }
 
+console.log(getChange(12, 18))
 export {getChange, getAverage, getAverageWMapper}
