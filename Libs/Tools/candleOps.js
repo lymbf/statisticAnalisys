@@ -9,7 +9,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rangeToOHLC = exports.isGreen = exports.getChange = exports.getOCChange = exports.getCCChange = exports.getATRChange = void 0;
+exports.getClose = exports.getHigh = exports.getOpen = exports.getLow = exports.getTime = exports.rangeToOHLC = exports.isGreen = exports.getChange = exports.getOCChange = exports.getCCChange = exports.getATRChange = void 0;
 var myMath_1 = require("./myMath");
 Object.defineProperty(exports, "getChange", { enumerable: true, get: function () { return myMath_1.getChange; } });
 function isGreen(candle) {
@@ -37,22 +37,27 @@ function getHigh(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
     return h;
 }
+exports.getHigh = getHigh;
 function getLow(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
     return h;
 }
+exports.getLow = getLow;
 function getOpen(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
     return o;
 }
+exports.getOpen = getOpen;
 function getClose(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
     return c;
 }
+exports.getClose = getClose;
 function getTime(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
     return t * 1000;
 }
+exports.getTime = getTime;
 function rangeToOHLC(arr, se) {
     var s = se[0], e = se[1];
     var ohlc = [0, 0, 0, 0];

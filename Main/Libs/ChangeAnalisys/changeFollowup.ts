@@ -45,8 +45,8 @@ function checkPreviousRangeChange(data: Candle[], candle: CandleIndexArray, dist
     return getOCChange(rangeToOHLC(data, [i - distance, i]))
 }
 
-function getFollowUpRangeMap(data: Candle[], distance: number, change: number, greater: string): RangeMap {
-    let candles: CandleIndexArray[] = findCandlesByChange(data, change, greater);
+function getFollowUpRangeMap(data: Candle[], distance: number, signalCandles: CandleIndexArray[], greater: string): RangeMap {
+    let candles: CandleIndexArray[] = signalCandles
     let res: RangeMap = [];
     candles.forEach(candle => {
         res.push(checkFollowUpRangeChange(data, candle, distance))
@@ -71,26 +71,28 @@ let greater: string = 'GREATER'
 let data: RawData = fetchData('DAX', '1D');
 console.log(new Date(data[0][0] * 1000).toLocaleString())
 console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
-// let res: RangeMap = getFollowUpRangeMap(data, distance, change, greater);
+// let signalCandles: CandleIndexArray[] = findCandlesByChange(data, change, greater)
+// let res: RangeMap = getFollowUpRangeMap(data, distance, signalCandles, greater);
 // let dates: string[] = getDatesMap(data, change, greater)
 // console.log('length: ', res.length)
 // console.log('avg: ', Mathjs.mean(res))
 
-for (let i: number = 1; i < 8; i++) {
-    for (let j: number = 0.5; j < 2.5; j += 0.25) {
-        console.log('------>>>><<<<<<<-----')
-        console.log('distance: ', i, 'signal change: ', j);
-        let r = getFollowUpRangeMap(data, i, j, greater)
-        r.length && console.log(Mathjs.mean(r))
-        r.length && console.log('length: ', r.length, 'probability: ', r.map((el: number): number => {
-            return el > 0 ? 1 : 0
-        }).reduce((acc: number, curr: number) => {
-            return acc + curr
-        }, 0) / r.length
-        )
-        console.log('------>>>><<<<<<<-----')
-    }
-}
+// for (let i: number = 1; i < 8; i++) {
+//     for (let j: number = 0.5; j < 2.5; j += 0.25) {
+//         console.log('------>>>><<<<<<<-----')
+//         console.log('distance: ', i, 'signal change: ', j);
+//         let signalCandles: CandleIndexArray[] = findCandlesByChange(data, j, greater)
+//         let r = getFollowUpRangeMap(data, i, signalCandles, greater)
+//         r.length && console.log(Mathjs.mean(r))
+//         r.length && console.log('length: ', r.length, 'probability: ', r.map((el: number): number => {
+//             return el > 0 ? 1 : 0
+//         }).reduce((acc: number, curr: number) => {
+//             return acc + curr
+//         }, 0) / r.length
+//         )
+//         console.log('------>>>><<<<<<<-----')
+//     }
+// }
 // console.log('res: ', res)
 // console.log('dates: ', dates)
 
