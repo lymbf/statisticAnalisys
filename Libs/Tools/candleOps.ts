@@ -65,4 +65,16 @@ function rangeToOHLC(arr: Candle[], se: [start: number, end: number]): Candle {
     return [0, ...ohlc];
 }
 
-export {getATRChange, getCCChange, getOCChange, getChange, isGreen, rangeToOHLC}
+export {
+    getATRChange,
+    getCCChange,
+    getOCChange,
+    getChange,
+    isGreen,
+    rangeToOHLC,
+    getTime,
+    getLow,
+    getOpen,
+    getHigh,
+    getClose
+}

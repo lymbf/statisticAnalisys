@@ -41,4 +41,6 @@ function getVolatility(arr: Candle[], i: number, distance: number): Volatility {
 
 let data: RawData = fetchData('DAX', '1D');
 
+export {getVolatility, getRollingVolatilityMap, getATRMap, getRangeByIndexesATR, getRangeFullATR, getATRChange}
+
 console.log(getRollingVolatilityMap(data.slice(data.length - 100, data.length), 10))
