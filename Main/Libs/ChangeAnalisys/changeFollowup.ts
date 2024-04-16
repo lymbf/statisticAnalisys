@@ -66,33 +66,33 @@ function getDatesMap(data: Candle[], change: number, greater: string): string[] 
 // function getSignalDates()
 let distance: number = 7;
 let change: number = 1;
-let greater: string = 'GREATER'
+let greater: string = 'LESSER'
 
 let data: RawData = fetchData('DAX', '1D');
-console.log(new Date(data[0][0] * 1000).toLocaleString())
-console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
+// console.log(new Date(data[0][0] * 1000).toLocaleString())
+// console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
 // let signalCandles: CandleIndexArray[] = findCandlesByChange(data, change, greater)
 // let res: RangeMap = getFollowUpRangeMap(data, distance, signalCandles, greater);
 // let dates: string[] = getDatesMap(data, change, greater)
 // console.log('length: ', res.length)
 // console.log('avg: ', Mathjs.mean(res))
 
-// for (let i: number = 1; i < 8; i++) {
-//     for (let j: number = 0.5; j < 2.5; j += 0.25) {
-//         console.log('------>>>><<<<<<<-----')
-//         console.log('distance: ', i, 'signal change: ', j);
-//         let signalCandles: CandleIndexArray[] = findCandlesByChange(data, j, greater)
-//         let r = getFollowUpRangeMap(data, i, signalCandles, greater)
-//         r.length && console.log(Mathjs.mean(r))
-//         r.length && console.log('length: ', r.length, 'probability: ', r.map((el: number): number => {
-//             return el > 0 ? 1 : 0
-//         }).reduce((acc: number, curr: number) => {
-//             return acc + curr
-//         }, 0) / r.length
-//         )
-//         console.log('------>>>><<<<<<<-----')
-//     }
-// }
+for (let i: number = 1; i < 2; i++) {
+    for (let j: number = -1.5; j > -2; j -= 0.25) {
+        console.log('------>>>><<<<<<<-----')
+        console.log('distance: ', i, 'signal change: ', j);
+        let signalCandles: CandleIndexArray[] = findCandlesByChange(data, j, greater)
+        let r = getFollowUpRangeMap(data, i, signalCandles, greater)
+        r.length && console.log(Mathjs.mean(r))
+        r.length && console.log('length: ', r.length, 'probability: ', r.map((el: number): number => {
+            return el > 0 ? 1 : 0
+        }).reduce((acc: number, curr: number) => {
+            return acc + curr
+        }, 0) / r.length
+        )
+        console.log('------>>>><<<<<<<-----')
+    }
+}
 // console.log('res: ', res)
 // console.log('dates: ', dates)
 

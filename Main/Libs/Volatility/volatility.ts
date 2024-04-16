@@ -3,6 +3,7 @@ import {getATRChange, rangeToOHLC} from "../../../Libs/Tools/candleOps";
 import {Volatility, VolatilityMap} from "../../../Interfaces/Volatility";
 import {fetchData} from "../../../Fetch/fetch";
 import {mean} from "mathjs";
+import {CandleIndexArray} from "../ChangeAnalisys/changeFollowup";
 
 function getRangeByIndexesATR(arr: Candle[], se: [start: number, end: number]): number {
     let [s, e] = se
@@ -38,6 +39,10 @@ function getVolatility(arr: Candle[], i: number, distance: number): Volatility {
     })
     return [arr[i][0], mean(temp)]
 }
+
+// function finCandlesByVolToAvgVol(arr: Candle[], predictor: number, RV_Length: number): CandleIndexArray[] {
+//
+// }
 
 let data: RawData = fetchData('DAX', '1D');
 

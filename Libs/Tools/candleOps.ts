@@ -30,7 +30,7 @@ function getHigh(candle: Candle): number {
 
 function getLow(candle: Candle): number {
     let [t, o, h, l, c] = candle;
-    return h;
+    return l;
 }
 
 function getOpen(candle: Candle): number {

@@ -62,17 +62,17 @@ function getDatesMap(data, change, greater) {
 // function getSignalDates()
 var distance = 7;
 var change = 1;
-var greater = 'GREATER';
+var greater = 'LESSER';
 var data = (0, fetch_1.fetchData)('DAX', '1D');
-console.log(new Date(data[0][0] * 1000).toLocaleString());
-console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString());
+// console.log(new Date(data[0][0] * 1000).toLocaleString())
+// console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
 // let signalCandles: CandleIndexArray[] = findCandlesByChange(data, change, greater)
 // let res: RangeMap = getFollowUpRangeMap(data, distance, signalCandles, greater);
 // let dates: string[] = getDatesMap(data, change, greater)
 // console.log('length: ', res.length)
 // console.log('avg: ', Mathjs.mean(res))
-for (var i = 1; i < 8; i++) {
-    for (var j = 0.5; j < 2.5; j += 0.25) {
+for (var i = 1; i < 2; i++) {
+    for (var j = -1.5; j > -2; j -= 0.25) {
         console.log('------>>>><<<<<<<-----');
         console.log('distance: ', i, 'signal change: ', j);
         var signalCandles = findCandlesByChange(data, j, greater);

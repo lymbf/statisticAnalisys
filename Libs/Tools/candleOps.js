@@ -40,7 +40,7 @@ function getHigh(candle) {
 exports.getHigh = getHigh;
 function getLow(candle) {
     var t = candle[0], o = candle[1], h = candle[2], l = candle[3], c = candle[4];
-    return h;
+    return l;
 }
 exports.getLow = getLow;
 function getOpen(candle) {
