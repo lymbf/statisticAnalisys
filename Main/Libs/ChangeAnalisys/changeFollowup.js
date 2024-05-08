@@ -60,29 +60,14 @@ function getDatesMap(data, change, greater) {
     return r;
 }
 // function getSignalDates()
-var distance = 7;
-var change = 1;
+var distance = 1;
+var change = -6;
 var greater = 'LESSER';
-var data = (0, fetch_1.fetchData)('DAX', '1D');
-// console.log(new Date(data[0][0] * 1000).toLocaleString())
-// console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString())
-// let signalCandles: CandleIndexArray[] = findCandlesByChange(data, change, greater)
-// let res: RangeMap = getFollowUpRangeMap(data, distance, signalCandles, greater);
-// let dates: string[] = getDatesMap(data, change, greater)
-// console.log('length: ', res.length)
-// console.log('avg: ', Mathjs.mean(res))
-for (var i = 1; i < 2; i++) {
-    for (var j = -1.5; j > -2; j -= 0.25) {
-        console.log('------>>>><<<<<<<-----');
-        console.log('distance: ', i, 'signal change: ', j);
-        var signalCandles = findCandlesByChange(data, j, greater);
-        var r = getFollowUpRangeMap(data, i, signalCandles, greater);
-        r.length && console.log(Mathjs.mean(r));
-        r.length && console.log('length: ', r.length, 'probability: ', r.map(function (el) {
-            return el > 0 ? 1 : 0;
-        }).reduce(function (acc, curr) {
-            return acc + curr;
-        }, 0) / r.length);
-        console.log('------>>>><<<<<<<-----');
-    }
-}
+var data = (0, fetch_1.fetchData)('QQQ', '1W');
+console.log(new Date(data[0][0] * 1000).toLocaleString());
+console.log(new Date(data[data.length - 1][0] * 1000).toLocaleString());
+var signalCandles = findCandlesByChange(data, change, greater);
+var res = getFollowUpRangeMap(data, distance, signalCandles, greater);
+var dates = getDatesMap(data, change, greater);
+console.log('length: ', res.length);
+console.log('avg: ', Mathjs.mean(res));

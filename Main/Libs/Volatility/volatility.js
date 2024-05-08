@@ -43,5 +43,5 @@ exports.getVolatility = getVolatility;
 // function finCandlesByVolToAvgVol(arr: Candle[], predictor: number, RV_Length: number): CandleIndexArray[] {
 //
 // }
-var data = (0, fetch_1.fetchData)('DAX', '1D');
+var data = (0, fetch_1.fetchData)('QQQ', '1D');
 console.log(getRollingVolatilityMap(data.slice(data.length - 100, data.length), 10));

@@ -29,7 +29,7 @@ function getFollowupMoveRangeMap(data, signals) {
     return res;
 }
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
-var signals = (0, changeFollowup_1.findCandlesByChange)(data, -1.5, 'LESSER');
+var signals = (0, changeFollowup_1.findCandlesByChange)(data, -0.75, 'LESSER');
 var res = getFollowupMoveRangeMap(data, signals);
 console.log(res.slice(res.length - 5, res.length));
 console.log(new Date(res[res.length - 1][0] * 1000).toLocaleDateString());

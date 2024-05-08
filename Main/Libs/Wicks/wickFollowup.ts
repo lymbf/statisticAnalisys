@@ -32,7 +32,7 @@ function getFollowupMoveRangeMap(data: Candle[], signals: CandleIndexArray[]): F
 }
 
 let data: RawData = fetchData('QQQ', '1D');
-let signals: CandleIndexArray[] = findCandlesByChange(data, -1.5, 'LESSER')
+let signals: CandleIndexArray[] = findCandlesByChange(data, -0.75, 'LESSER')
 let res = getFollowupMoveRangeMap(data, signals);
 console.log(res.slice(res.length - 5, res.length));
 console.log(new Date(res[res.length - 1][0] * 1000).toLocaleDateString())

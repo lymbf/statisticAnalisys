@@ -1,8 +1,10 @@
 //calculates by closing prices
-import {Candle} from "../../../../Interfaces/Candle";
-import {getCCChange, getClose, getOCChange} from "../../../../Libs/Tools/candleOps";
-import {mean} from "mathjs";
-import {MA} from "../../../../Interfaces/MA";
+import {Candle, RawData} from "../../../../Interfaces/Candle";
+import {getCCChange, getChange, getClose, getOCChange} from "../../../../Libs/Tools/candleOps";
+import {mean, std} from "mathjs";
+import {MA, MADeviations} from "../../../../Interfaces/MA";
+import {fetchData} from "../../../../Fetch/fetch";
+import math = require("mathjs");
 
 function getMAByPrice(arr: Candle[], distance: number): MA {
     let res: MA = [];
@@ -36,3 +38,32 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
     }
     return res;
 }
+
+function getMADeviations(MA: MA, candle: Candle): MADeviations {
+    let [t, o, h, l, c] = [...candle];
+    const filteredMA: number = MA.filter((el) => {
+        if (el[0] === t) console.log('MA value: ', el[1])
+        return el[0] === t
+    })[0][1]
+    let closeDeviation: number = -1 * getChange(c, filteredMA)
+    let openDeviation: number = -1 * getChange(o, filteredMA)
+    let highDeviation: number = -1 * getChange(h, filteredMA);
+    let lowDeviation: number = -1 * getChange(l, filteredMA);
+    // console.log('timestamp: ', new Date(t * 1000).toLocaleString());
+    // console.log('close: ', c)
+    return {closeDeviation, highDeviation, lowDeviation, openDeviation}
+}
+
+let data: RawData = fetchData('QQQ', '1D');
+data = data.slice(data.length - 250, data.length)
+let MA = getMAByPrice(data, 50);
+
+
+// console.log('MA deviations: ', getMADeviations(MA, data[21]));
+let res = []
+for (let i: number = 51; i < data.length; i++) {
+    res.push(math.abs(getMADeviations(MA, data[i]).closeDeviation))
+}
+
+console.log('average deviation: ', mean([...res]));
+console.log('std dev: ', std([...res]))
