@@ -1,4 +1,5 @@
 import {days, months} from "../../Constants/basicConstants";
+import {Timestamp} from "../../Interfaces/Candle";
 
 function getLastDateOfTheMonth(timestamp: number): number {
     let m: number = new Date(timestamp).getMonth();
@@ -48,6 +49,21 @@ function getDateOfNthDayOfTheMonth(n: number, day: string, month: string, year: 
 function getTime(year: number, month: number, day: number, hour: number, minutes: number): number {
     let date: Date = new Date(year, month, day, hour, minutes)
     return date.getTime();
+
+
 }
 
-export {getTime, getFirstDayOfTheMonth, getLastDayOfTheMonth, getDateOfNthDayOfTheMonth, getLastDateOfTheMonth}
+function compareTimestampsByDayPlus(t1: Timestamp, t2: Timestamp): boolean {
+    let x = 1000 * 60 * 60 * 24;
+    return (t1 - t1 % x) === (t2 - t2 % x)
+}
+
+
+export {
+    getTime,
+    getFirstDayOfTheMonth,
+    getLastDayOfTheMonth,
+    getDateOfNthDayOfTheMonth,
+    getLastDateOfTheMonth,
+    compareTimestampsByDayPlus
+}
