@@ -28,8 +28,9 @@ const getCumulativeReturnsMap = function (data: Candle[], timestamp: number, len
     })))
     return map;
 }
+//
+// let data: RawData = fetchData('QQQ', '1D');
 
-let data: RawData = fetchData('QQQ', '1D');
 
 let res = getCumulativeReturnsMap(data, data[data.length - 40][0], 10);
 console.log('res: ', res)
