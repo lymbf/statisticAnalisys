@@ -58,6 +58,16 @@ function compareTimestampsByDayPlus(t1: Timestamp, t2: Timestamp): boolean {
     return (t1 - t1 % x) === (t2 - t2 % x)
 }
 
+function getMapOfGMTDates(start: Timestamp): Timestamp[] {
+    let res: Timestamp[] = [];
+    let date = new Date(start);
+    let temp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+    while (temp < new Date().getTime()) {
+        res.push(temp);
+        temp += 1000 * 60 * 60 * 24
+    }
+    return res;
+}
 
 export {
     getTime,
@@ -65,5 +75,6 @@ export {
     getLastDayOfTheMonth,
     getDateOfNthDayOfTheMonth,
     getLastDateOfTheMonth,
-    compareTimestampsByDayPlus
+    compareTimestampsByDayPlus,
+    getMapOfGMTDates
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compareTimestampsByDayPlus = exports.getLastDateOfTheMonth = exports.getDateOfNthDayOfTheMonth = exports.getLastDayOfTheMonth = exports.getFirstDayOfTheMonth = exports.getTime = void 0;
+exports.getMapOfGMTDates = exports.compareTimestampsByDayPlus = exports.getLastDateOfTheMonth = exports.getDateOfNthDayOfTheMonth = exports.getLastDayOfTheMonth = exports.getFirstDayOfTheMonth = exports.getTime = void 0;
 var basicConstants_1 = require("../../Constants/basicConstants");
 function getLastDateOfTheMonth(timestamp) {
     var m = new Date(timestamp).getMonth();
@@ -65,3 +65,14 @@ function compareTimestampsByDayPlus(t1, t2) {
     return (t1 - t1 % x) === (t2 - t2 % x);
 }
 exports.compareTimestampsByDayPlus = compareTimestampsByDayPlus;
+function getMapOfGMTDates(start) {
+    var res = [];
+    var date = new Date(start);
+    var temp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    while (temp < new Date().getTime()) {
+        res.push(temp);
+        temp += 1000 * 60 * 60 * 24;
+    }
+    return res;
+}
+exports.getMapOfGMTDates = getMapOfGMTDates;
