@@ -32,4 +32,5 @@ const getCumulativeReturnsMap = function (data: Candle[], timestamp: number, len
     return map;
 }
 
+
 export {getCumulativeReturnsMap}
