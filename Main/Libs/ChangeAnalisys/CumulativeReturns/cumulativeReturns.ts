@@ -1,16 +1,19 @@
 import {Change} from "../../../../Interfaces/Volatility";
 import {Candle, RawData, Timestamp} from "../../../../Interfaces/Candle";
 import {getChange} from "../../../../Libs/Tools/myMath";
-import {fetchData} from "../../../../Fetch/fetch";
+import {fetchData, fetchDataset} from "../../../../Fetch/fetch";
 import * as fs from "fs";
 import * as path from "path";
 import {compareTimestampsByDayPlus} from "../../../../Libs/Date/dateLib";
 
 //includes signal in an array
 const getCumulativeReturnsMap = function (data: Candle[], timestamp: number, length: number): [Timestamp, Change][] | false {
+    let time = timestamp;
+    if (new Date(timestamp).getDay() === 0) time = timestamp + 1000 * 60 * 60 * 24
+    if (new Date(timestamp).getDay() === 6) time = timestamp + 1000 * 60 * 60 * 24 * 2
 
     let i = data.findIndex((c) => {
-        return compareTimestampsByDayPlus(c[0] * 1000, timestamp * 1000)
+        return compareTimestampsByDayPlus(c[0] * 1000, time)
     });
     if (i === -1) return false;
     let arr = data.slice(i, data.length);
@@ -28,9 +31,5 @@ const getCumulativeReturnsMap = function (data: Candle[], timestamp: number, len
     })))
     return map;
 }
-//
-// let data: RawData = fetchData('QQQ', '1D');
 
-
-let res = getCumulativeReturnsMap(data, data[data.length - 40][0], 10);
-console.log('res: ', res)
+export {getCumulativeReturnsMap}

@@ -7,8 +7,13 @@ var path = require("path");
 var dateLib_1 = require("../../../../Libs/Date/dateLib");
 //includes signal in an array
 var getCumulativeReturnsMap = function (data, timestamp, length) {
+    var time = timestamp;
+    if (new Date(timestamp).getDay() === 0)
+        time = timestamp + 1000 * 60 * 60 * 24;
+    if (new Date(timestamp).getDay() === 6)
+        time = timestamp + 1000 * 60 * 60 * 24 * 2;
     var i = data.findIndex(function (c) {
-        return (0, dateLib_1.compareTimestampsByDayPlus)(c[0] * 1000, timestamp * 1000);
+        return (0, dateLib_1.compareTimestampsByDayPlus)(c[0] * 1000, time);
     });
     if (i === -1)
         return false;
@@ -27,6 +32,20 @@ var getCumulativeReturnsMap = function (data, timestamp, length) {
     })));
     return map;
 };
-var data = (0, fetch_1.fetchData)('QQQ', '1D');
-var res = getCumulativeReturnsMap(data, data[data.length - 40][0], 10);
-console.log('res: ', res);
+//
+var QQQData = (0, fetch_1.fetchData)('QQQ', '1D');
+var data = (0, fetch_1.fetchDataset)('fullMoonDates');
+data = data.slice(data.length - 10, data.length);
+var arr = [];
+data.forEach(function (timestamp) {
+    console.log('date: ', new Date(timestamp).toUTCString());
+    var CRMap = getCumulativeReturnsMap(QQQData, timestamp, 10);
+    var data = CRMap && CRMap.map(function (el) {
+        return el[1];
+    });
+    arr.push(data);
+    console.log(data);
+});
+fs.writeFileSync(path.join(__dirname, 'Temp', 'newtemp.json'), JSON.stringify(arr));
+// let res = getCumulativeReturnsMap(data, data[data.length - 40][0], 10);
+// console.log('res: ', res)
