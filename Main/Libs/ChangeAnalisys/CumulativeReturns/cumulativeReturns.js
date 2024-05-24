@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCumulativeReturnsMap = void 0;
 var myMath_1 = require("../../../../Libs/Tools/myMath");
-var fetch_1 = require("../../../../Fetch/fetch");
 var fs = require("fs");
 var path = require("path");
 var dateLib_1 = require("../../../../Libs/Date/dateLib");
@@ -32,20 +32,4 @@ var getCumulativeReturnsMap = function (data, timestamp, length) {
     })));
     return map;
 };
-//
-var QQQData = (0, fetch_1.fetchData)('QQQ', '1D');
-var data = (0, fetch_1.fetchDataset)('fullMoonDates');
-data = data.slice(data.length - 10, data.length);
-var arr = [];
-data.forEach(function (timestamp) {
-    console.log('date: ', new Date(timestamp).toUTCString());
-    var CRMap = getCumulativeReturnsMap(QQQData, timestamp, 10);
-    var data = CRMap && CRMap.map(function (el) {
-        return el[1];
-    });
-    arr.push(data);
-    console.log(data);
-});
-fs.writeFileSync(path.join(__dirname, 'Temp', 'newtemp.json'), JSON.stringify(arr));
-// let res = getCumulativeReturnsMap(data, data[data.length - 40][0], 10);
-// console.log('res: ', res)
+exports.getCumulativeReturnsMap = getCumulativeReturnsMap;
