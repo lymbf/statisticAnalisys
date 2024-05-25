@@ -1,7 +1,7 @@
 import {fetchData, fetchDataset} from "../../../Fetch/fetch";
 import {Candle, Timestamp} from "../../../Interfaces/Candle";
 import {getCumulativeReturnsMap} from "../../Libs/ChangeAnalisys/CumulativeReturns/cumulativeReturns";
-import {TradeDirection, TradeResult} from "../../../Interfaces/Trades";
+import {SetupResult, TradeDirection, TradeResult} from "../../../Interfaces/Trades";
 import {compareTimestampsByDayPlus} from "../../../Libs/Date/dateLib";
 import {getChange} from "../../../Libs/Tools/myMath";
 import * as fs from "fs";
@@ -13,9 +13,9 @@ const data = fetchData('QQQ', '1D');
 const performTrade = function (signal: Timestamp, data: Candle[]) {
     let followUpReturns = getCumulativeReturnsMap(data, signal, 10);
     const direction: TradeDirection = followUpReturns[5][1] > 0 ? -1 : 1;
-    console.log('direction: ', direction);
-    console.log('followup return day 5: ', followUpReturns[5][1])
-    console.log('signal date: ', new Date(signal))
+    // console.log('direction: ', direction);
+    // console.log('followup return day 5: ', followUpReturns[5][1])
+    // console.log('signal date: ', new Date(signal))
     let i = data.findIndex((e) => {
         return compareTimestampsByDayPlus(e[0] * 1000, signal)
     })
@@ -29,12 +29,18 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         open: t * 1000,
         close: t2 * 1000
     }
-    console.log('open date: ', new Date(result.open))
-    console.log('result: ', result)
+    // console.log('open date: ', new Date(result.open))
+    // console.log('result: ', result)
 }
 
 performTrade(fullMoonDates[fullMoonDates.length - 2], data);
 
-fullMoonDates.forEach((timestamp) => {
+const testSetup = function (): SetupResult {
+    let won: number = 0;
+    let lost: number = 0;
+    let trades: TradeResult[] = [];
+    fullMoonDates.forEach((timestamp) => {
 
-})
+
+    })
+}
