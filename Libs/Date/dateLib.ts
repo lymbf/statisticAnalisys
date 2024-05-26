@@ -49,8 +49,6 @@ function getDateOfNthDayOfTheMonth(n: number, day: string, month: string, year: 
 function getTime(year: number, month: number, day: number, hour: number, minutes: number): number {
     let date: Date = new Date(year, month, day, hour, minutes)
     return date.getTime();
-
-
 }
 
 function compareTimestampsByDayPlus(t1: Timestamp, t2: Timestamp): boolean {
@@ -69,6 +67,13 @@ function getMapOfGMTDates(start: Timestamp): Timestamp[] {
     return res;
 }
 
+function getClosestTradingDay(timestamp: Timestamp): Timestamp {
+    let time: Timestamp = timestamp;
+    if (new Date(timestamp).getDay() === 0) time = timestamp + 1000 * 60 * 60 * 24
+    if (new Date(timestamp).getDay() === 6) time = timestamp + 1000 * 60 * 60 * 24 * 2
+    return time - time % 1000 * 60 * 60 * 24
+}
+
 export {
     getTime,
     getFirstDayOfTheMonth,
@@ -76,5 +81,6 @@ export {
     getDateOfNthDayOfTheMonth,
     getLastDateOfTheMonth,
     compareTimestampsByDayPlus,
-    getMapOfGMTDates
+    getMapOfGMTDates,
+    getClosestTradingDay
 }
