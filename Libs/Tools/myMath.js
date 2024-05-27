@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAverageWMapper = exports.getAverage = exports.getChange = void 0;
 function getChange(open, close) {
-    return parseFloat((((close - open) / open) * 100).toFixed(6));
+    return parseFloat((((close - open) / open)).toFixed(6));
 }
 exports.getChange = getChange;
 function getAverage(arr) {

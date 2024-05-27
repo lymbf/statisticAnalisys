@@ -1,7 +1,7 @@
 import {Candle, CandleToNumberMapper} from "../../Interfaces/Candle";
 
 function getChange(open: number, close: number): number {
-    return parseFloat((((close - open) / open) * 100).toFixed(6))
+    return parseFloat((((close - open) / open)).toFixed(6))
 }
 
 
