@@ -9,6 +9,7 @@ interface MADeviations {
     lowDeviation: number
 }
 
+
 interface MAOptions {
     '10': number,
     '15': number,

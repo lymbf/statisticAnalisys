@@ -8,9 +8,9 @@ interface TradeResult {
     duration: number, //number of Candles
     open: Timestamp,
     close: Timestamp,
-    indicatorsUponSignal: {
-        MA: MAOptions
-    }
+    // indicatorsUponSignal: {
+    //     MA: MAOptions
+    // }
 }
 
 interface SetupResult {

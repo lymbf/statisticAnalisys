@@ -40,7 +40,7 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         duration: 3,
         open: t * 1000,
         close: t2 * 1000,
-        indicatorsUponSignal: {}
+        // indicatorsUponSignal: {}
     }
     // console.log('result: ', result)
     return result
