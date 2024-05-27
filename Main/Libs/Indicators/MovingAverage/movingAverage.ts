@@ -5,7 +5,6 @@ import {mean, std} from "mathjs";
 import {MA, MADeviations} from "../../../../Interfaces/MA";
 import {fetchData} from "../../../../Fetch/fetch";
 import math = require("mathjs");
-import {Index} from "../../../../Interfaces/Other";
 import {HashList} from "../../../../Interfaces/DataTypes";
 
 function getMAByPrice(arr: Candle[], distance: number): MA {
@@ -34,7 +33,11 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
     let res: MA = [];
     for (let i: number = distance + 1; i < arr.length; i++) {
         let temp: number[] = arr.slice(i - distance - 1, i).map((c, j, t) => {
-            return getCCChange(c, t[j + 1])
+            if (j + 1 < t.length) {
+                return getCCChange(c, t[j + 1])
+            }
+        }).filter(e => {
+            return !isNaN(e)
         })
         res.push([arr[i][0], mean(temp)])
     }
@@ -44,7 +47,6 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
 function getMADeviations(MA: MA, candle: Candle): MADeviations {
     let [t, o, h, l, c] = [...candle];
     const filteredMA: number = MA.filter((el) => {
-        if (el[0] === t) console.log('MA value: ', el[1])
         return el[0] === t
     })[0][1]
     let closeDeviation: number = -1 * getChange(c, filteredMA)
@@ -58,14 +60,14 @@ function getMADeviations(MA: MA, candle: Candle): MADeviations {
 
 // ----->>>>>> returns hashlist of MA [interval, value] pairs; <<<<<--------
 function getMAOptions(timestamp: Timestamp, data: Candle[], options?: {
-    type?: 'CC' | 'OC',
+    type?: 'CC' | 'OC' | 'P',
     range?: number[]
 }): HashList {
-    let opts: HashList;
-    let temp = options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200]
+    let opts: HashList = {};
+    let temp = options && options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200]
 
 
-    if (options.type && options.type === 'CC') {
+    if (options && options.type && options.type === 'CC') {
         temp.forEach(dist => {
             let ma: MA = getMAByCCChange(data, dist).filter((e) => {
                 return e[0] * 1000 === timestamp
@@ -73,12 +75,21 @@ function getMAOptions(timestamp: Timestamp, data: Candle[], options?: {
 
             opts[`${dist}`] = ma.length ? ma[0][1] : null
         })
-    } else {
+    } else if (options && options.type && options.type === 'OC') {
         temp.forEach(dist => {
             let ma: MA = getMAByOCChange(data, dist).filter((e) => {
                 return e[0] * 1000 === timestamp
             })
             opts[dist] = ma.length ? ma[0][1] : null
+        })
+    } else {
+        temp.forEach(dist => {
+            let ma: MA = getMAByPrice(data, dist).filter((e) => {
+                return e[0] * 1000 === timestamp
+            })
+            opts[dist] = ma.length ? getMADeviations(ma, data[data.findIndex((e) => {
+                return e[0] * 1000 === timestamp
+            })]).closeDeviation : null
         })
     }
 
@@ -87,16 +98,16 @@ function getMAOptions(timestamp: Timestamp, data: Candle[], options?: {
 
 export {getMAOptions, getMAByOCChange, getMAByCCChange, getMAByPrice, getMADeviations}
 
-let data: RawData = fetchData('QQQ', '1D');
-data = data.slice(data.length - 250, data.length)
-let MA = getMAByPrice(data, 50);
-
-
-// console.log('MA deviations: ', getMADeviations(MA, data[21]));
-let res = []
-for (let i: number = 51; i < data.length; i++) {
-    res.push(math.abs(getMADeviations(MA, data[i]).closeDeviation))
-}
-
-console.log('average deviation: ', mean([...res]));
-console.log('std dev: ', std([...res]))
+// let data: RawData = fetchData('QQQ', '1D');
+// data = data.slice(data.length - 250, data.length)
+// let MA = getMAByPrice(data, 50);
+//
+//
+// // console.log('MA deviations: ', getMADeviations(MA, data[21]));
+// let res = []
+// for (let i: number = 51; i < data.length; i++) {
+//     res.push(math.abs(getMADeviations(MA, data[i]).closeDeviation))
+// }
+//
+// console.log('average deviation: ', mean([...res]));
+// console.log('std dev: ', std([...res]))

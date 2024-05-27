@@ -6,6 +6,7 @@ import {compareTimestampsByDayPlus, getClosestTradingDay} from "../../../Libs/Da
 import {getChange} from "../../../Libs/Tools/myMath";
 import * as fs from "fs";
 import {mean, std} from "mathjs";
+import {getIndicatorsForTimestamp} from "../../Libs/Indicators/indicators";
 
 
 const fullMoonDates: Timestamp[] = fetchDataset('fullMoonDates');
@@ -42,6 +43,7 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         close: t2 * 1000,
         // indicatorsUponSignal: {}
     }
+    console.log(getIndicatorsForTimestamp(signal, data))
     // console.log('result: ', result)
     return result
     // console.log('signal date: ', new Date(signal))
@@ -69,6 +71,7 @@ const testSetup = function (): SetupResult {
     let returns = trades.map(t => {
         return t.return
     });
+
     return {
 
         trades: trades,
@@ -81,4 +84,4 @@ const testSetup = function (): SetupResult {
         winrate: won / (won + lost)
     }
 }
-console.log(testSetup())
+// console.log(testSetup())

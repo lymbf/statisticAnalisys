@@ -14,6 +14,7 @@ var cumulativeReturns_1 = require("../../Libs/ChangeAnalisys/CumulativeReturns/c
 var dateLib_1 = require("../../../Libs/Date/dateLib");
 var myMath_1 = require("../../../Libs/Tools/myMath");
 var mathjs_1 = require("mathjs");
+var indicators_1 = require("../../Libs/Indicators/indicators");
 var fullMoonDates = (0, fetch_1.fetchDataset)('fullMoonDates');
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
 var performTrade = function (signal, data) {
@@ -48,6 +49,7 @@ var performTrade = function (signal, data) {
         close: t2 * 1000,
         // indicatorsUponSignal: {}
     };
+    console.log((0, indicators_1.getIndicatorsForTimestamp)(signal, data));
     // console.log('result: ', result)
     return result;
     // console.log('signal date: ', new Date(signal))
@@ -83,4 +85,4 @@ var testSetup = function () {
         winrate: won / (won + lost)
     };
 };
-console.log(testSetup());
+// console.log(testSetup())
