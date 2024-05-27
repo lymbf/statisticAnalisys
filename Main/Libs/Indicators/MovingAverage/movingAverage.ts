@@ -57,15 +57,18 @@ function getMADeviations(MA: MA, candle: Candle): MADeviations {
 }
 
 // ----->>>>>> returns hashlist of MA [interval, value] pairs; <<<<<--------
-function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'OC', range?: number[] }): HashList {
+function getMAOptions(timestamp: Timestamp, data: Candle[], options?: {
+    type?: 'CC' | 'OC',
+    range?: number[]
+}): HashList {
     let opts: HashList;
     let temp = options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200]
-    let timestamp: Timestamp = data[index][0];
+
 
     if (options.type && options.type === 'CC') {
         temp.forEach(dist => {
             let ma: MA = getMAByCCChange(data, dist).filter((e) => {
-                e[0] === timestamp
+                return e[0] * 1000 === timestamp
             })
 
             opts[`${dist}`] = ma.length ? ma[0][1] : null
@@ -73,7 +76,7 @@ function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'O
     } else {
         temp.forEach(dist => {
             let ma: MA = getMAByOCChange(data, dist).filter((e) => {
-                e[0] === timestamp
+                return e[0] * 1000 === timestamp
             })
             opts[dist] = ma.length ? ma[0][1] : null
         })

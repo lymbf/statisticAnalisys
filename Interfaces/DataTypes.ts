@@ -2,4 +2,8 @@ interface HashList {
     [key: string]: number;
 }
 
-export {HashList}
+interface HashTable {
+    [key: string]: any
+}
+
+export {HashList, HashTable}
