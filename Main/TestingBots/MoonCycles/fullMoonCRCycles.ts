@@ -2,7 +2,7 @@ import {fetchData, fetchDataset} from "../../../Fetch/fetch";
 import {Candle, Timestamp} from "../../../Interfaces/Candle";
 import {getCumulativeReturnsMap} from "../../Libs/ChangeAnalisys/CumulativeReturns/cumulativeReturns";
 import {SetupResult, TradeDirection, TradeResult} from "../../../Interfaces/Trades";
-import {compareTimestampsByDayPlus} from "../../../Libs/Date/dateLib";
+import {compareTimestampsByDayPlus, getClosestTradingDay} from "../../../Libs/Date/dateLib";
 import {getChange} from "../../../Libs/Tools/myMath";
 import * as fs from "fs";
 import {mean, std} from "mathjs";
@@ -12,9 +12,9 @@ const fullMoonDates: Timestamp[] = fetchDataset('fullMoonDates');
 const data = fetchData('QQQ', '1D');
 
 const performTrade = function (signal: Timestamp, data: Candle[]) {
-    let time = signal;
-    if (new Date(signal).getDay() === 0) time = signal + 1000 * 60 * 60 * 24
-    if (new Date(signal).getDay() === 6) time = signal + 1000 * 60 * 60 * 24 * 2
+    let time = getClosestTradingDay(signal);
+    // if (new Date(signal).getDay() === 0) time = signal + 1000 * 60 * 60 * 24
+    // if (new Date(signal).getDay() === 6) time = signal + 1000 * 60 * 60 * 24 * 2
     let followUpReturns = getCumulativeReturnsMap(data, signal, 10);
     if (!followUpReturns || followUpReturns.length < 8) {
         console.log('followupreturns not long enough: ')
@@ -54,12 +54,14 @@ const testSetup = function (): SetupResult {
     let won: number = 0;
     let lost: number = 0;
     let trades: TradeResult[] = [];
-    let sum = 1;
+    let sum = 0;
+    let s = 1;
     fullMoonDates.slice(fullMoonDates.length - 100, fullMoonDates.length).forEach((timestamp) => {
         let trade = performTrade(timestamp, data)
         if (trade) {
             trade.return > 0 ? won++ : lost++;
-            sum = sum + trade.return / 100 * sum
+            sum += trade.return
+            s = s + s * trade.return
             trades.push(trade);
         }
     })
@@ -71,7 +73,8 @@ const testSetup = function (): SetupResult {
         trades: trades,
         stdDev: std(...returns),
         mean: mean(returns),
-        return: (sum - 1),
+        return: sum,
+        compundReturn: s,
         won: won,
         lost: lost,
         winrate: won / (won + lost)

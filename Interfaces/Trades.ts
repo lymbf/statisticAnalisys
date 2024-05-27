@@ -13,6 +13,7 @@ interface SetupResult {
     mean?: number,
     stdDev?: number,
     return?: number,
+    compundReturn: number,
     trades?: TradeResult[],
     // biggestDrawdown?: number,
     won: number,

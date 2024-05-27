@@ -17,11 +17,9 @@ var mathjs_1 = require("mathjs");
 var fullMoonDates = (0, fetch_1.fetchDataset)('fullMoonDates');
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
 var performTrade = function (signal, data) {
-    var time = signal;
-    if (new Date(signal).getDay() === 0)
-        time = signal + 1000 * 60 * 60 * 24;
-    if (new Date(signal).getDay() === 6)
-        time = signal + 1000 * 60 * 60 * 24 * 2;
+    var time = (0, dateLib_1.getClosestTradingDay)(signal);
+    // if (new Date(signal).getDay() === 0) time = signal + 1000 * 60 * 60 * 24
+    // if (new Date(signal).getDay() === 6) time = signal + 1000 * 60 * 60 * 24 * 2
     var followUpReturns = (0, cumulativeReturns_1.getCumulativeReturnsMap)(data, signal, 10);
     if (!followUpReturns || followUpReturns.length < 8) {
         console.log('followupreturns not long enough: ');
@@ -59,12 +57,12 @@ var testSetup = function () {
     var won = 0;
     var lost = 0;
     var trades = [];
-    var sum = 1;
+    var sum = 0;
     fullMoonDates.slice(fullMoonDates.length - 100, fullMoonDates.length).forEach(function (timestamp) {
         var trade = performTrade(timestamp, data);
         if (trade) {
             trade.return > 0 ? won++ : lost++;
-            sum = sum + trade.return / 100 * sum;
+            sum += trade.return;
             trades.push(trade);
         }
     });
@@ -75,7 +73,7 @@ var testSetup = function () {
         trades: trades,
         stdDev: mathjs_1.std.apply(void 0, returns),
         mean: (0, mathjs_1.mean)(returns),
-        return: (sum - 1),
+        return: sum,
         won: won,
         lost: lost,
         winrate: won / (won + lost)
