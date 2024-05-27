@@ -39,7 +39,8 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         lowVariance: lowVariance,
         duration: 3,
         open: t * 1000,
-        close: t2 * 1000
+        close: t2 * 1000,
+        indicatorsUponSignal: {}
     }
     // console.log('result: ', result)
     return result
@@ -61,7 +62,7 @@ const testSetup = function (): SetupResult {
         if (trade) {
             trade.return > 0 ? won++ : lost++;
             sum += trade.return
-            s = s + s * trade.return
+            s = s + parseFloat((s * trade.return).toFixed(5))
             trades.push(trade);
         }
     })
@@ -74,7 +75,7 @@ const testSetup = function (): SetupResult {
         stdDev: std(...returns),
         mean: mean(returns),
         return: sum,
-        compundReturn: s,
+        compoundReturn: s,
         won: won,
         lost: lost,
         winrate: won / (won + lost)

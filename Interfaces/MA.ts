@@ -9,4 +9,14 @@ interface MADeviations {
     lowDeviation: number
 }
 
-export {MA, MADeviations}
+interface MAOptions {
+    '10': number,
+    '15': number,
+    '17': number
+    '20': number,
+    '50': number,
+    '100': number,
+    '200': number,
+}
+
+export {MA, MADeviations, MAOptions}

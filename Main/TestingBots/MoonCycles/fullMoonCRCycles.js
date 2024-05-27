@@ -58,11 +58,13 @@ var testSetup = function () {
     var lost = 0;
     var trades = [];
     var sum = 0;
+    var s = 1;
     fullMoonDates.slice(fullMoonDates.length - 100, fullMoonDates.length).forEach(function (timestamp) {
         var trade = performTrade(timestamp, data);
         if (trade) {
             trade.return > 0 ? won++ : lost++;
             sum += trade.return;
+            s = s + parseFloat((s * trade.return).toFixed(5));
             trades.push(trade);
         }
     });
@@ -74,6 +76,7 @@ var testSetup = function () {
         stdDev: mathjs_1.std.apply(void 0, returns),
         mean: (0, mathjs_1.mean)(returns),
         return: sum,
+        compundReturn: s,
         won: won,
         lost: lost,
         winrate: won / (won + lost)
