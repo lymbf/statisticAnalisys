@@ -9,6 +9,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMADeviations = exports.getMAByPrice = exports.getMAByCCChange = exports.getMAByOCChange = exports.getMAOptions = void 0;
 var candleOps_1 = require("../../../../Libs/Tools/candleOps");
 var mathjs_1 = require("mathjs");
 var fetch_1 = require("../../../../Fetch/fetch");
@@ -23,6 +24,7 @@ function getMAByPrice(arr, distance) {
     }
     return res;
 }
+exports.getMAByPrice = getMAByPrice;
 function getMAByOCChange(arr, distance) {
     var res = [];
     for (var i = distance - 1; i < arr.length; i++) {
@@ -33,6 +35,7 @@ function getMAByOCChange(arr, distance) {
     }
     return res;
 }
+exports.getMAByOCChange = getMAByOCChange;
 function getMAByCCChange(arr, distance) {
     var res = [];
     for (var i = distance + 1; i < arr.length; i++) {
@@ -43,6 +46,7 @@ function getMAByCCChange(arr, distance) {
     }
     return res;
 }
+exports.getMAByCCChange = getMAByCCChange;
 function getMADeviations(MA, candle) {
     var _a = __spreadArray([], candle, true), t = _a[0], o = _a[1], h = _a[2], l = _a[3], c = _a[4];
     var filteredMA = MA.filter(function (el) {
@@ -58,6 +62,31 @@ function getMADeviations(MA, candle) {
     // console.log('close: ', c)
     return { closeDeviation: closeDeviation, highDeviation: highDeviation, lowDeviation: lowDeviation, openDeviation: openDeviation };
 }
+exports.getMADeviations = getMADeviations;
+// ----->>>>>> returns hashlist of MA [interval, value] pairs; <<<<<--------
+function getMAOptions(index, data, options) {
+    var opts;
+    var temp = options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200];
+    var timestamp = data[index][0];
+    if (options.type && options.type === 'CC') {
+        temp.forEach(function (dist) {
+            var ma = getMAByCCChange(data, dist).filter(function (e) {
+                e[0] === timestamp;
+            });
+            opts["".concat(dist)] = ma.length ? ma[0][1] : null;
+        });
+    }
+    else {
+        temp.forEach(function (dist) {
+            var ma = getMAByOCChange(data, dist).filter(function (e) {
+                e[0] === timestamp;
+            });
+            opts[dist] = ma.length ? ma[0][1] : null;
+        });
+    }
+    return opts;
+}
+exports.getMAOptions = getMAOptions;
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
 data = data.slice(data.length - 250, data.length);
 var MA = getMAByPrice(data, 50);

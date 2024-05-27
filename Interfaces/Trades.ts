@@ -1,5 +1,6 @@
 import {Timestamp} from "./Candle";
-import {MAOptions} from "./MA";
+
+// import {MAOptions} from "./MA";
 
 interface TradeResult {
     return: number,

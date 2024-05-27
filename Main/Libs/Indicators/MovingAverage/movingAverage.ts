@@ -2,10 +2,11 @@
 import {Candle, RawData, Timestamp} from "../../../../Interfaces/Candle";
 import {getCCChange, getChange, getClose, getOCChange} from "../../../../Libs/Tools/candleOps";
 import {mean, std} from "mathjs";
-import {MA, MADeviations, MAOptions} from "../../../../Interfaces/MA";
+import {MA, MADeviations} from "../../../../Interfaces/MA";
 import {fetchData} from "../../../../Fetch/fetch";
 import math = require("mathjs");
 import {Index} from "../../../../Interfaces/Other";
+import {HashList} from "../../../../Interfaces/DataTypes";
 
 function getMAByPrice(arr: Candle[], distance: number): MA {
     let res: MA = [];
@@ -55,9 +56,10 @@ function getMADeviations(MA: MA, candle: Candle): MADeviations {
     return {closeDeviation, highDeviation, lowDeviation, openDeviation}
 }
 
-function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'OC' }): MAOptions {
-    let opts: MAOptions;
-    let temp = [10, 15, 17, 20, 30, 50, 100, 200]
+// ----->>>>>> returns hashlist of MA [interval, value] pairs; <<<<<--------
+function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'OC', range?: number[] }): HashList {
+    let opts: HashList;
+    let temp = options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200]
     let timestamp: Timestamp = data[index][0];
 
     if (options.type && options.type === 'CC') {
@@ -65,14 +67,15 @@ function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'O
             let ma: MA = getMAByCCChange(data, dist).filter((e) => {
                 e[0] === timestamp
             })
-            opts[dist] = ma.length ? ma[0] : null
+
+            opts[`${dist}`] = ma.length ? ma[0][1] : null
         })
     } else {
         temp.forEach(dist => {
             let ma: MA = getMAByOCChange(data, dist).filter((e) => {
                 e[0] === timestamp
             })
-            opts[dist] = ma.length ? ma[0] : null
+            opts[dist] = ma.length ? ma[0][1] : null
         })
     }
 

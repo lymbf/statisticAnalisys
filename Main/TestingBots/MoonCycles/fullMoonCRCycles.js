@@ -45,7 +45,8 @@ var performTrade = function (signal, data) {
         lowVariance: lowVariance,
         duration: 3,
         open: t * 1000,
-        close: t2 * 1000
+        close: t2 * 1000,
+        // indicatorsUponSignal: {}
     };
     // console.log('result: ', result)
     return result;
@@ -76,7 +77,7 @@ var testSetup = function () {
         stdDev: mathjs_1.std.apply(void 0, returns),
         mean: (0, mathjs_1.mean)(returns),
         return: sum,
-        compundReturn: s,
+        compoundReturn: s,
         won: won,
         lost: lost,
         winrate: won / (won + lost)
