@@ -1,10 +1,11 @@
 //calculates by closing prices
-import {Candle, RawData} from "../../../../Interfaces/Candle";
+import {Candle, RawData, Timestamp} from "../../../../Interfaces/Candle";
 import {getCCChange, getChange, getClose, getOCChange} from "../../../../Libs/Tools/candleOps";
 import {mean, std} from "mathjs";
-import {MA, MADeviations} from "../../../../Interfaces/MA";
+import {MA, MADeviations, MAOptions} from "../../../../Interfaces/MA";
 import {fetchData} from "../../../../Fetch/fetch";
 import math = require("mathjs");
+import {Index} from "../../../../Interfaces/Other";
 
 function getMAByPrice(arr: Candle[], distance: number): MA {
     let res: MA = [];
@@ -53,6 +54,32 @@ function getMADeviations(MA: MA, candle: Candle): MADeviations {
     // console.log('close: ', c)
     return {closeDeviation, highDeviation, lowDeviation, openDeviation}
 }
+
+function getMAOptions(index: Index, data: Candle[], options?: { type?: 'CC' | 'OC' }): MAOptions {
+    let opts: MAOptions;
+    let temp = [10, 15, 17, 20, 30, 50, 100, 200]
+    let timestamp: Timestamp = data[index][0];
+
+    if (options.type && options.type === 'CC') {
+        temp.forEach(dist => {
+            let ma: MA = getMAByCCChange(data, dist).filter((e) => {
+                e[0] === timestamp
+            })
+            opts[dist] = ma.length ? ma[0] : null
+        })
+    } else {
+        temp.forEach(dist => {
+            let ma: MA = getMAByOCChange(data, dist).filter((e) => {
+                e[0] === timestamp
+            })
+            opts[dist] = ma.length ? ma[0] : null
+        })
+    }
+
+    return opts;
+}
+
+export {getMAOptions, getMAByOCChange, getMAByCCChange, getMAByPrice, getMADeviations}
 
 let data: RawData = fetchData('QQQ', '1D');
 data = data.slice(data.length - 250, data.length)

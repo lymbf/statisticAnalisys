@@ -1,3 +1,5 @@
 type Dataset = any[];
 
-export {Dataset}
+type Index = number;
+
+export {Dataset, Index}
