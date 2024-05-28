@@ -13,7 +13,7 @@ function getMAByPrice(arr: Candle[], distance: number): MA {
         let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
             return getClose(c);
         })
-        res.push([arr[i][0], mean(temp)])
+        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
     }
     return res
 }
@@ -24,7 +24,7 @@ function getMAByOCChange(arr: Candle[], distance: number): MA {
         let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
             return getOCChange(c)
         })
-        res.push([arr[i][0], mean(temp)])
+        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
     }
     return res;
 }
@@ -39,7 +39,7 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
         }).filter(e => {
             return !isNaN(e)
         })
-        res.push([arr[i][0], mean(temp)])
+        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
     }
     return res;
 }
