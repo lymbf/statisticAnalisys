@@ -11,11 +11,11 @@ interface BotEngineOptions {
 
     signalsMapping?(signals: Timestamp[]): Timestamp[]
 
-    slArgs: any[],
+    slArgs?: any[],
 
     throwSL?(...args: any[]): number,
 
-    tpArgs: any[],
+    tpArgs?: any[],
 
     throwTP?(...args: any[]): number,
 
@@ -34,6 +34,8 @@ const performTrade = function (signal: Timestamp, data: Candle[], options: BotEn
         let SL = options.throwSL(i, data, ...options.slArgs)
         let TP = options.throwSL(i, data, ...options.tpArgs)
     }
+
+    return null
 }
 
 const runBotEngine = function (data: Candle[], options: BotEngineOptions): SetupResult {
@@ -49,12 +51,15 @@ const runBotEngine = function (data: Candle[], options: BotEngineOptions): Setup
         MA[l] = getMAByPrice(data, l);
         Volatility[l] = getMAByCCChange(data, l);
     })
+    console.log('MA: ', MA)
+    console.log('Volatility: ', Volatility)
 
     signals.forEach(t => {
 
     })
+    return null
 
 }
 
 let data = fetchData('QQQ', '1D')
-runBotEngine(data, {signals: fetchDataset('fullMoonDates')})
+runBotEngine(data, {signals: fetchDataset('fullMoonDates'), indicatorsOptions: {ranges: [10, 17, 25, 50]}})
