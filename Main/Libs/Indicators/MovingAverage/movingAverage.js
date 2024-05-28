@@ -18,7 +18,7 @@ function getMAByPrice(arr, distance) {
         var temp = arr.slice(i - distance + 1, i).map(function (c) {
             return (0, candleOps_1.getClose)(c);
         });
-        res.push([arr[i][0], (0, mathjs_1.mean)(temp)]);
+        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
@@ -29,7 +29,7 @@ function getMAByOCChange(arr, distance) {
         var temp = arr.slice(i - distance + 1, i).map(function (c) {
             return (0, candleOps_1.getOCChange)(c);
         });
-        res.push([arr[i][0], (0, mathjs_1.mean)(temp)]);
+        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
@@ -44,7 +44,7 @@ function getMAByCCChange(arr, distance) {
         }).filter(function (e) {
             return !isNaN(e);
         });
-        res.push([arr[i][0], (0, mathjs_1.mean)(temp)]);
+        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
