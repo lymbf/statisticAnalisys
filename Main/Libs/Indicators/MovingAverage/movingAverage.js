@@ -66,7 +66,7 @@ exports.getMADeviations = getMADeviations;
 // ----->>>>>> returns hashlist of MA [interval, value] pairs; <<<<<--------
 function getMAOptions(timestamp, data, options) {
     var opts = {};
-    var temp = options && options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200];
+    var temp = options && options.range ? options.range : [10, 15, 17, 20, 30, 50, 100];
     if (options && options.type && options.type === 'CC') {
         temp.forEach(function (dist) {
             var ma = getMAByCCChange(data, dist).filter(function (e) {

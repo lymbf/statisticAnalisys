@@ -64,7 +64,7 @@ function getMAOptions(timestamp: Timestamp, data: Candle[], options?: {
     range?: number[]
 }): HashList {
     let opts: HashList = {};
-    let temp = options && options.range ? options.range : [10, 15, 17, 20, 30, 50, 100, 200]
+    let temp = options && options.range ? options.range : [10, 15, 17, 20, 30, 50, 100]
 
 
     if (options && options.type && options.type === 'CC') {

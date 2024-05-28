@@ -7,6 +7,8 @@ import {getChange} from "../../../Libs/Tools/myMath";
 import * as fs from "fs";
 import {mean, std} from "mathjs";
 import {getIndicatorsForTimestamp} from "../../Libs/Indicators/indicators";
+import {HashTable} from "../../../Interfaces/DataTypes";
+import {getMAByCCChange, getMAByPrice} from "../../Libs/Indicators/MovingAverage/movingAverage";
 
 
 const fullMoonDates: Timestamp[] = fetchDataset('fullMoonDates');
@@ -41,9 +43,9 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         duration: 3,
         open: t * 1000,
         close: t2 * 1000,
-        // indicatorsUponSignal: {}
+        indicatorsUponSignal: getIndicatorsForTimestamp(signal, data)
     }
-    console.log(getIndicatorsForTimestamp(signal, data))
+    // console.log(getIndicatorsForTimestamp(signal, data))
     // console.log('result: ', result)
     return result
     // console.log('signal date: ', new Date(signal))
@@ -51,9 +53,16 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
 
 }
 
-performTrade(fullMoonDates[fullMoonDates.length - 2], data);
+// performTrade(fullMoonDates[fullMoonDates.length - 2], data);
 
 const testSetup = function (): SetupResult {
+    const MARanges = [10, 15, 17, 20, 30, 50, 100];
+    let MAs: HashTable = {};
+    let MAVolatilities: HashTable = {};
+    MARanges.forEach(r => {
+        MAs[r] = getMAByPrice(data, r)
+        MAVolatilities[r] = getMAByCCChange(data, r)
+    })
     let won: number = 0;
     let lost: number = 0;
     let trades: TradeResult[] = [];
@@ -84,4 +93,4 @@ const testSetup = function (): SetupResult {
         winrate: won / (won + lost)
     }
 }
-// console.log(testSetup())
+console.log(testSetup())

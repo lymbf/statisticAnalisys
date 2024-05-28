@@ -1,10 +1,12 @@
 import {Candle, Timestamp} from "../../../Interfaces/Candle";
 import {HashTable} from "../../../Interfaces/DataTypes";
-import {getMAOptions} from "./MovingAverage/movingAverage";
+import {getMAByCCChange, getMAByPrice, getMAOptions} from "./MovingAverage/movingAverage";
 import {Index} from "../../../Interfaces/Other";
 import {compareTimestampsByDayPlus} from "../../../Libs/Date/dateLib";
 
+
 function getIndicatorsForTimestamp(timestamp: Timestamp, data: Candle[]): HashTable {
+
     let i: Index = data.findIndex((e) => {
         return e[0] * 1000 === timestamp
     })

@@ -1,4 +1,5 @@
 import {Timestamp} from "./Candle";
+import {HashTable} from "./DataTypes";
 
 // import {MAOptions} from "./MA";
 
@@ -9,9 +10,7 @@ interface TradeResult {
     duration: number, //number of Candles
     open: Timestamp,
     close: Timestamp,
-    // indicatorsUponSignal: {
-    //     MA: MAOptions
-    // }
+    indicatorsUponSignal: HashTable
 }
 
 interface SetupResult {

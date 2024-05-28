@@ -15,6 +15,7 @@ var dateLib_1 = require("../../../Libs/Date/dateLib");
 var myMath_1 = require("../../../Libs/Tools/myMath");
 var mathjs_1 = require("mathjs");
 var indicators_1 = require("../../Libs/Indicators/indicators");
+var movingAverage_1 = require("../../Libs/Indicators/MovingAverage/movingAverage");
 var fullMoonDates = (0, fetch_1.fetchDataset)('fullMoonDates');
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
 var performTrade = function (signal, data) {
@@ -47,16 +48,23 @@ var performTrade = function (signal, data) {
         duration: 3,
         open: t * 1000,
         close: t2 * 1000,
-        // indicatorsUponSignal: {}
+        indicatorsUponSignal: (0, indicators_1.getIndicatorsForTimestamp)(signal, data)
     };
-    console.log((0, indicators_1.getIndicatorsForTimestamp)(signal, data));
+    // console.log(getIndicatorsForTimestamp(signal, data))
     // console.log('result: ', result)
     return result;
     // console.log('signal date: ', new Date(signal))
     // console.log('open date: ', new Date(result.open))
 };
-performTrade(fullMoonDates[fullMoonDates.length - 2], data);
+// performTrade(fullMoonDates[fullMoonDates.length - 2], data);
 var testSetup = function () {
+    var MARanges = [10, 15, 17, 20, 30, 50, 100];
+    var MAs = {};
+    var MAVolatilities = {};
+    MARanges.forEach(function (r) {
+        MAs[r] = (0, movingAverage_1.getMAByPrice)(data, r);
+        MAVolatilities[r] = (0, movingAverage_1.getMAByCCChange)(data, r);
+    });
     var won = 0;
     var lost = 0;
     var trades = [];
@@ -85,4 +93,4 @@ var testSetup = function () {
         winrate: won / (won + lost)
     };
 };
-// console.log(testSetup())
+console.log(testSetup());
