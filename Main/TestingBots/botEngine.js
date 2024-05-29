@@ -28,6 +28,8 @@ var performTrade = function (signal, data, options) {
     var index = data.findIndex(function (e) {
         return (0, dateLib_1.compareTimestampsByDayPlus)(e[0] * 1000, signal);
     });
+    if (index < 0)
+        return null;
     /* declare all vars for TradeResult */
     var highVariance = 0;
     var lowVariance = 0;
@@ -40,12 +42,14 @@ var performTrade = function (signal, data, options) {
         highVariance = options.calcHighVariance(highVariance, data[i]);
         lowVariance = options.calcLowVariance(lowVariance, data[i]);
         duration++;
-        var SL = options.throwSL.apply(options, __spreadArray([i, data], options.slArgs, false));
-        var TP = options.throwSL.apply(options, __spreadArray([i, data], options.tpArgs, false));
+        var slArgs = options.slArgs || [];
+        var SL = options.throwSL.apply(options, __spreadArray([i, data], slArgs, false));
+        var tpArgs = options.tpArgs || [];
+        var TP = options.throwTP.apply(options, __spreadArray([i, data], tpArgs, false));
         /* <---------to be implemented--->
         * if both SL and TP -> findWhichOccurredFirst */
         if (TP && SL)
-            console.log("both happened");
+            console.log("sl: ", SL, 'tp: ', TP);
         if (SL) {
             close = data[i][0] * 1000;
             return {
@@ -89,8 +93,35 @@ var runBotEngine = function (data, options) {
     var tradeOptions = __assign(__assign({}, options), { indicatorsOptions: __assign(__assign({}, options.indicatorsOptions), { MATable: MA, VolatilityTable: Volatility }) });
     signals.forEach(function (t) {
         var tradeRes = performTrade(t, data, tradeOptions);
+        // console.log('trade res: ', tradeRes)
     });
     return null;
 };
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
-runBotEngine(data, { signals: (0, fetch_1.fetchDataset)('fullMoonDates'), indicatorsOptions: { ranges: [10, 17, 25, 50] } });
+runBotEngine(data, {
+    signals: (0, fetch_1.fetchDataset)('fullMoonDates'),
+    signalsMapping: function (signals) {
+        return signals.map(function (e) {
+            return (0, dateLib_1.getClosestTradingDay)(e);
+        });
+    },
+    indicatorsOptions: { ranges: [10, 17, 25, 50] },
+    throwTP: function (i) {
+        if (i % 2)
+            return 1;
+        else
+            return null;
+    },
+    throwSL: function (i) {
+        if (i % 2)
+            return null;
+        else
+            return -0.9;
+    },
+    calcLowVariance: function (current, candle) {
+        return -2;
+    },
+    calcHighVariance: function (current, candle) {
+        return 3;
+    }
+});

@@ -1,6 +1,6 @@
 import {SetupResult, TradeResult} from "../../Interfaces/Trades";
 import {Candle, Timestamp} from "../../Interfaces/Candle";
-import {compareTimestampsByDayPlus} from "../../Libs/Date/dateLib";
+import {compareTimestampsByDayPlus, getClosestTradingDay} from "../../Libs/Date/dateLib";
 import {fetchData, fetchDataset} from "../../Fetch/fetch";
 import {MA} from "../../Interfaces/MA";
 import {HashTable} from "../../Interfaces/DataTypes";
@@ -14,17 +14,16 @@ interface BotEngineOptions {
 
     slArgs?: any[],
 
-    throwSL?(...args: any[]): number,
+    throwSL(...args: any[]): number,
 
     tpArgs?: any[],
 
-    throwTP?(...args: any[]): number,
+    throwTP(...args: any[]): number,
 
-    calcHighVariance?(current: number, candle: Candle): number,
+    calcHighVariance(current: number, candle: Candle): number,
 
-    calcLowVariance?(current: number, candle: Candle): number,
+    calcLowVariance(current: number, candle: Candle): number,
 
-    lowVarianceArgs?: any[],
     indicatorsOptions: {
         ranges: number[],
         MATable?: HashTable,
@@ -34,10 +33,13 @@ interface BotEngineOptions {
 
 
 const performTrade = function (signal: Timestamp, data: Candle[], options: BotEngineOptions): TradeResult {
+
     /* get Index of signal bar */
     let index = data.findIndex(e => {
         return compareTimestampsByDayPlus(e[0] * 1000, signal)
     })
+    if (index < 0) return null
+
     /* declare all vars for TradeResult */
     let highVariance = 0;
     let lowVariance = 0;
@@ -45,18 +47,20 @@ const performTrade = function (signal: Timestamp, data: Candle[], options: BotEn
     let open = signal;
     let close: Timestamp;
     let indicatorsUponSignal: HashTable = {};
+
     /*then start the loop */
     for (let i = index; i < data.length; i++) {
         highVariance = options.calcHighVariance(highVariance, data[i])
         lowVariance = options.calcLowVariance(lowVariance, data[i]);
         duration++;
-        let SL = options.throwSL(i, data, ...options.slArgs)
-        let TP = options.throwSL(i, data, ...options.tpArgs)
+        let slArgs = options.slArgs || []
+        let SL = options.throwSL(i, data, ...slArgs)
+        let tpArgs = options.tpArgs || []
+        let TP = options.throwTP(i, data, ...tpArgs)
 
         /* <---------to be implemented--->
         * if both SL and TP -> findWhichOccurredFirst */
-        if (TP && SL) console.log("both happened");
-
+        if (TP && SL) console.log("sl: ", SL, 'tp: ', TP);
         if (SL) {
             close = data[i][0] * 1000;
             return {
@@ -82,7 +86,6 @@ const performTrade = function (signal: Timestamp, data: Candle[], options: BotEn
             }
         }
     }
-
     return null
 }
 
@@ -101,14 +104,40 @@ const runBotEngine = function (data: Candle[], options: BotEngineOptions): Setup
     })
 
     /* construct options for perform trade*/
-    let tradeOptions: BotEngineOptions = {...options, indicatorsOptions: {...options.indicatorsOptions, MATable: MA, VolatilityTable: Volatility}}
+    let tradeOptions: BotEngineOptions = {
+        ...options,
+        indicatorsOptions: {...options.indicatorsOptions, MATable: MA, VolatilityTable: Volatility}
+    }
 
     signals.forEach(t => {
         let tradeRes: TradeResult = performTrade(t, data, tradeOptions)
+        console.log('trade res: ', tradeRes)
     })
     return null
 
 }
 
 let data = fetchData('QQQ', '1D')
-runBotEngine(data, {signals: fetchDataset('fullMoonDates'), indicatorsOptions: {ranges: [10, 17, 25, 50]}})
+runBotEngine(data, {
+    signals: fetchDataset('fullMoonDates'),
+    signalsMapping(signals: Timestamp[]): Timestamp[] {
+        return signals.map(e => {
+            return getClosestTradingDay(e);
+        })
+    },
+    indicatorsOptions: {ranges: [10, 17, 25, 50]},
+    throwTP(i: number): number {
+        if (i % 2) return 1
+        else return null
+    },
+    throwSL(i: number): number {
+        if (i % 2) return null
+        else return -0.9
+    },
+    calcLowVariance(current: number, candle: Candle): number {
+        return -2
+    },
+    calcHighVariance(current: number, candle: Candle): number {
+        return 3
+    }
+})

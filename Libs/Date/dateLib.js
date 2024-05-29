@@ -82,6 +82,6 @@ function getClosestTradingDay(timestamp) {
         time = timestamp + 1000 * 60 * 60 * 24;
     if (new Date(timestamp).getDay() === 6)
         time = timestamp + 1000 * 60 * 60 * 24 * 2;
-    return time - time % 1000 * 60 * 60 * 24;
+    return time;
 }
 exports.getClosestTradingDay = getClosestTradingDay;
