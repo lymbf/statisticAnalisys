@@ -10,19 +10,12 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var dateLib_1 = require("../../Libs/Date/dateLib");
 var fetch_1 = require("../../Fetch/fetch");
 var movingAverage_1 = require("../Libs/Indicators/MovingAverage/movingAverage");
+var mathjs_1 = require("mathjs");
+var myMath_1 = require("../../Libs/Tools/myMath");
 var performTrade = function (signal, data, options) {
     /* get Index of signal bar */
     var index = data.findIndex(function (e) {
@@ -42,36 +35,31 @@ var performTrade = function (signal, data, options) {
         highVariance = options.calcHighVariance(highVariance, data[i]);
         lowVariance = options.calcLowVariance(lowVariance, data[i]);
         duration++;
-        var slArgs = options.slArgs || [];
-        var SL = options.throwSL.apply(options, __spreadArray([i, data], slArgs, false));
-        var tpArgs = options.tpArgs || [];
-        var TP = options.throwTP.apply(options, __spreadArray([i, data], tpArgs, false));
+        var SL = options.throwSL(index, i, data);
+        var TP = options.throwTP(index, i, data);
         /* <---------to be implemented--->
         * if both SL and TP -> findWhichOccurredFirst */
         if (TP && SL)
             console.log("sl: ", SL, 'tp: ', TP);
-        if (SL) {
+        /* if ret has value ( sl or tp got hit ) return "TradeResult" */
+        var ret = null;
+        if (SL)
+            ret = SL;
+        if (TP)
+            ret = TP;
+        if (ret) {
             close = data[i][0] * 1000;
             return {
-                return: SL,
+                return: ret,
                 highVariance: highVariance,
                 lowVariance: lowVariance,
                 duration: duration,
                 open: open,
                 close: close,
-                indicatorsUponSignal: {}
-            };
-        }
-        if (TP) {
-            close = data[i][0] * 1000;
-            return {
-                return: TP,
-                highVariance: highVariance,
-                lowVariance: lowVariance,
-                duration: duration,
-                open: open,
-                close: close,
-                indicatorsUponSignal: {}
+                /* <----------  to be implemented ------->*/
+                /* indicators for signal occurance for TradeResult*/
+                indicatorsUponSignal: {},
+                dateString: new Date(signal).toUTCString()
             };
         }
     }
@@ -79,7 +67,7 @@ var performTrade = function (signal, data, options) {
 };
 var runBotEngine = function (data, options) {
     /* adjust signals in case extra mapping needed ( optional )*/
-    var signals = options.signals, throwSL = options.throwSL, throwTP = options.throwTP, signalsMapping = options.signalsMapping, slArgs = options.slArgs, tpArgs = options.tpArgs, indicatorsOptions = options.indicatorsOptions;
+    var signals = options.signals, throwSL = options.throwSL, throwTP = options.throwTP, signalsMapping = options.signalsMapping, indicatorsOptions = options.indicatorsOptions;
     signalsMapping && (signals = signalsMapping(signals));
     /*get MA arrays; volatility arrays;
     * important to get in advance here, instead of calculating for each trade*/
@@ -89,16 +77,72 @@ var runBotEngine = function (data, options) {
         MA[l] = (0, movingAverage_1.getMAByPrice)(data, l);
         Volatility[l] = (0, movingAverage_1.getMAByCCChange)(data, l);
     });
+    /* setup result vars and calc functions (getters) init */
+    /*-------------------------- */
+    var won = 0;
+    var lost = 0;
+    var trades = [];
+    var getReturn = function (trades) {
+        var temp = trades.map(function (t) {
+            return t.return;
+        });
+        var s = 0;
+        for (var i = 0; i < temp.length; i++) {
+            s += temp[i];
+        }
+        return s;
+    };
+    var getCompoundReturn = function (returns) {
+        var temp = trades.map(function (t) {
+            return t.return;
+        });
+        var s = 1;
+        for (var i = 0; i < temp.length; i++) {
+            s = s + parseFloat((s * temp[i]).toFixed(6));
+        }
+        return s - 1;
+    };
+    var getWinrate = function (won, lost) {
+        return won / (won + lost);
+    };
+    var getMean = function (trades) {
+        var temp = trades.map(function (t) {
+            return t.return;
+        });
+        return mathjs_1.mean.apply(void 0, temp);
+    };
+    var getStdDev = function (returns) {
+        var temp = trades.map(function (t) {
+            return t.return;
+        });
+        return mathjs_1.std.apply(void 0, temp);
+    };
+    /* ------------------------ */
     /* construct options for perform trade*/
     var tradeOptions = __assign(__assign({}, options), { indicatorsOptions: __assign(__assign({}, options.indicatorsOptions), { MATable: MA, VolatilityTable: Volatility }) });
+    /* loop through signals -> push trade res to trades array, increment won and lost vars */
     signals.forEach(function (t) {
-        var tradeRes = performTrade(t, data, tradeOptions);
-        // console.log('trade res: ', tradeRes)
+        var trade = performTrade(t, data, tradeOptions);
+        if (trade) {
+            trades.push(trade);
+            trade.return > 0 ? won++ : lost++;
+        }
     });
-    return null;
+    /* if trades array is not empty, return "SetupResult" */
+    if (!trades.length)
+        return null;
+    return {
+        trades: trades,
+        won: won,
+        lost: lost,
+        winrate: getWinrate(won, lost),
+        return: getReturn(trades),
+        compoundReturn: getCompoundReturn(trades),
+        mean: getMean(trades)
+    };
 };
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
-runBotEngine(data, {
+var res = runBotEngine(data, {
     signals: (0, fetch_1.fetchDataset)('fullMoonDates'),
     signalsMapping: function (signals) {
         return signals.map(function (e) {
@@ -106,17 +150,30 @@ runBotEngine(data, {
         });
     },
     indicatorsOptions: { ranges: [10, 17, 25, 50] },
-    throwTP: function (i) {
-        if (i % 2)
-            return 1;
+    throwTP: function (i, j, data) {
+        if (i + 6 > data.length - 1)
+            return null;
+        var direction = (0, myMath_1.getChange)(data[i][4], data[i + 4][4]) >= 0 ? -1 : 1;
+        if (j === i + 6) {
+            if (direction > 0) {
+                return (0, myMath_1.getChange)(data[i + 4][4], data[j][4]);
+            }
+            else {
+                return (0, myMath_1.getChange)(data[i + 4][4], data[j][4]) * -1;
+            }
+        }
         else
             return null;
     },
-    throwSL: function (i) {
-        if (i % 2)
+    throwSL: function (i, j, data) {
+        if (i + 6 > data.length - 1)
             return null;
-        else
-            return -0.9;
+        if ((0, myMath_1.getChange)(data[i + 4][4], data[j][4]) < -0.25) {
+            return -0.4;
+        }
+        else {
+            return null;
+        }
     },
     calcLowVariance: function (current, candle) {
         return -2;
@@ -125,3 +182,4 @@ runBotEngine(data, {
         return 3;
     }
 });
+console.log('setup result: ', res);

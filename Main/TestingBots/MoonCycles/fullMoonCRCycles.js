@@ -48,7 +48,8 @@ var performTrade = function (signal, data) {
         duration: 3,
         open: t * 1000,
         close: t2 * 1000,
-        indicatorsUponSignal: (0, indicators_1.getIndicatorsForTimestamp)(signal, data)
+        indicatorsUponSignal: (0, indicators_1.getIndicatorsForTimestamp)(signal, data),
+        dateString: 'asd'
     };
     // console.log(getIndicatorsForTimestamp(signal, data))
     // console.log('result: ', result)
@@ -90,7 +91,7 @@ var testSetup = function () {
         compoundReturn: s,
         won: won,
         lost: lost,
-        winrate: won / (won + lost)
+        winrate: won / (won + lost),
     };
 };
 console.log(testSetup());

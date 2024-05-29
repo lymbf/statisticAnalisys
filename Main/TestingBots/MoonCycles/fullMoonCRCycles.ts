@@ -43,7 +43,8 @@ const performTrade = function (signal: Timestamp, data: Candle[]) {
         duration: 3,
         open: t * 1000,
         close: t2 * 1000,
-        indicatorsUponSignal: getIndicatorsForTimestamp(signal, data)
+        indicatorsUponSignal: getIndicatorsForTimestamp(signal, data),
+        dateString: 'asd'
     }
     // console.log(getIndicatorsForTimestamp(signal, data))
     // console.log('result: ', result)
@@ -90,7 +91,9 @@ const testSetup = function (): SetupResult {
         compoundReturn: s,
         won: won,
         lost: lost,
-        winrate: won / (won + lost)
+        winrate: won / (won + lost),
+
+
     }
 }
 console.log(testSetup())

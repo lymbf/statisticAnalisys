@@ -10,7 +10,8 @@ interface TradeResult {
     duration: number, //number of Candles
     open: Timestamp,
     close: Timestamp,
-    indicatorsUponSignal: HashTable
+    indicatorsUponSignal: HashTable,
+    dateString: string
 }
 
 interface SetupResult {
