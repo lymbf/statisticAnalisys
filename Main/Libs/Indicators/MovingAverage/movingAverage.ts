@@ -13,7 +13,7 @@ function getMAByPrice(arr: Candle[], distance: number): MA {
         let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
             return getClose(c);
         })
-        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
+        res.push([arr[i][0] * 1000, parseFloat(mean(temp).toFixed(6))])
     }
     return res
 }
@@ -24,7 +24,7 @@ function getMAByOCChange(arr: Candle[], distance: number): MA {
         let temp: number[] = arr.slice(i - distance + 1, i).map((c) => {
             return getOCChange(c)
         })
-        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
+        res.push([arr[i][0] * 1000, parseFloat(mean(temp).toFixed(6))])
     }
     return res;
 }
@@ -39,7 +39,7 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
         }).filter(e => {
             return !isNaN(e)
         })
-        res.push([arr[i][0], parseFloat(mean(temp).toFixed(6))])
+        res.push([arr[i][0] * 1000, parseFloat(mean(temp).toFixed(6))])
     }
     return res;
 }
@@ -47,7 +47,7 @@ function getMAByCCChange(arr: Candle[], distance: number): MA {
 function getMADeviations(MA: MA, candle: Candle): MADeviations {
     let [t, o, h, l, c] = [...candle];
     const filteredMA: number = MA.filter((el) => {
-        return el[0] === t
+        return el[0] === t * 1000
     })[0][1]
     let closeDeviation: number = -1 * getChange(c, filteredMA)
     let openDeviation: number = -1 * getChange(o, filteredMA)

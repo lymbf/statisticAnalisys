@@ -4,7 +4,7 @@ import {compareTimestampsByDayPlus, getClosestTradingDay} from "../../Libs/Date/
 import {fetchData, fetchDataset} from "../../Fetch/fetch";
 import {MA} from "../../Interfaces/MA";
 import {HashTable} from "../../Interfaces/DataTypes";
-import {getMAByCCChange, getMAByPrice} from "../Libs/Indicators/MovingAverage/movingAverage";
+import {getMAByCCChange, getMAByPrice, getMADeviations} from "../Libs/Indicators/MovingAverage/movingAverage";
 import {max, mean, std} from "mathjs";
 import {Index} from "../../Interfaces/Other";
 import {getChange} from "../../Libs/Tools/myMath";
@@ -44,7 +44,18 @@ const performTrade = function (signal: Timestamp, data: Candle[], options: BotEn
     let duration = 0;
     let open = signal;
     let close: Timestamp;
-    let indicatorsUponSignal: HashTable = {};
+    let indicatorsUponSignal: HashTable = {MA: {}, volatility: {}};
+
+    /* fill-up indicators for signal candle */
+    for (let [k, v] of Object.entries(options.indicatorsOptions.MATable)) {
+        indicatorsUponSignal.MA[k] = {deviation: getMADeviations(v, data[index])}
+    }
+    for (let [k, v] of Object.entries(options.indicatorsOptions.VolatilityTable)) {
+        let i = v.findIndex((e) => {
+            compareTimestampsByDayPlus(e[0], signal)
+        })
+        i >= 0 && (indicatorsUponSignal.volatility[k] = v[i][1])
+    }
 
     /*then start the loop */
     for (let i = index; i < data.length; i++) {
@@ -73,7 +84,7 @@ const performTrade = function (signal: Timestamp, data: Candle[], options: BotEn
                 close,
                 /* <----------  to be implemented ------->*/
                 /* indicators for signal occurance for TradeResult*/
-                indicatorsUponSignal: {},
+                indicatorsUponSignal: indicatorsUponSignal,
                 dateString: new Date(signal).toUTCString()
             }
         }
@@ -167,7 +178,7 @@ const runBotEngine = function (data: Candle[], options: BotEngineOptions): Setup
 
 let data = fetchData('QQQ', '1D')
 let res = runBotEngine(data, {
-    signals: fetchDataset('fullMoonDates'),
+    signals: fetchDataset('fullMoonDates').slice(5, 8),
     signalsMapping(signals: Timestamp[]): Timestamp[] {
         return signals.map(e => {
             return getClosestTradingDay(e);
@@ -201,4 +212,4 @@ let res = runBotEngine(data, {
     }
 })
 
-console.log('setup result: ', res)
+console.log('setup result: ', res.trades)

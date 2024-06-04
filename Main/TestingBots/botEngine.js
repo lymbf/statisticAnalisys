@@ -29,7 +29,19 @@ var performTrade = function (signal, data, options) {
     var duration = 0;
     var open = signal;
     var close;
-    var indicatorsUponSignal = {};
+    var indicatorsUponSignal = { MA: {}, volatility: {} };
+    /* fill-up indicators for signal candle */
+    for (var _i = 0, _a = Object.entries(options.indicatorsOptions.MATable); _i < _a.length; _i++) {
+        var _b = _a[_i], k = _b[0], v = _b[1];
+        indicatorsUponSignal.MA[k] = { deviation: (0, movingAverage_1.getMADeviations)(v, data[index]) };
+    }
+    for (var _c = 0, _d = Object.entries(options.indicatorsOptions.VolatilityTable); _c < _d.length; _c++) {
+        var _e = _d[_c], k = _e[0], v = _e[1];
+        var i = v.findIndex(function (e) {
+            (0, dateLib_1.compareTimestampsByDayPlus)(e[0], signal);
+        });
+        i >= 0 && (indicatorsUponSignal.volatility[k] = v[i][1]);
+    }
     /*then start the loop */
     for (var i = index; i < data.length; i++) {
         highVariance = options.calcHighVariance(highVariance, data[i]);
@@ -58,7 +70,7 @@ var performTrade = function (signal, data, options) {
                 close: close,
                 /* <----------  to be implemented ------->*/
                 /* indicators for signal occurance for TradeResult*/
-                indicatorsUponSignal: {},
+                indicatorsUponSignal: indicatorsUponSignal,
                 dateString: new Date(signal).toUTCString()
             };
         }
@@ -143,7 +155,7 @@ var runBotEngine = function (data, options) {
 };
 var data = (0, fetch_1.fetchData)('QQQ', '1D');
 var res = runBotEngine(data, {
-    signals: (0, fetch_1.fetchDataset)('fullMoonDates'),
+    signals: (0, fetch_1.fetchDataset)('fullMoonDates').slice(5, 8),
     signalsMapping: function (signals) {
         return signals.map(function (e) {
             return (0, dateLib_1.getClosestTradingDay)(e);
@@ -182,4 +194,4 @@ var res = runBotEngine(data, {
         return 3;
     }
 });
-console.log('setup result: ', res);
+console.log('setup result: ', res.trades);

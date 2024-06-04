@@ -18,7 +18,7 @@ function getMAByPrice(arr, distance) {
         var temp = arr.slice(i - distance + 1, i).map(function (c) {
             return (0, candleOps_1.getClose)(c);
         });
-        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
+        res.push([arr[i][0] * 1000, parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
@@ -29,7 +29,7 @@ function getMAByOCChange(arr, distance) {
         var temp = arr.slice(i - distance + 1, i).map(function (c) {
             return (0, candleOps_1.getOCChange)(c);
         });
-        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
+        res.push([arr[i][0] * 1000, parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
@@ -44,7 +44,7 @@ function getMAByCCChange(arr, distance) {
         }).filter(function (e) {
             return !isNaN(e);
         });
-        res.push([arr[i][0], parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
+        res.push([arr[i][0] * 1000, parseFloat((0, mathjs_1.mean)(temp).toFixed(6))]);
     }
     return res;
 }
@@ -52,7 +52,7 @@ exports.getMAByCCChange = getMAByCCChange;
 function getMADeviations(MA, candle) {
     var _a = __spreadArray([], candle, true), t = _a[0], o = _a[1], h = _a[2], l = _a[3], c = _a[4];
     var filteredMA = MA.filter(function (el) {
-        return el[0] === t;
+        return el[0] === t * 1000;
     })[0][1];
     var closeDeviation = -1 * (0, candleOps_1.getChange)(c, filteredMA);
     var openDeviation = -1 * (0, candleOps_1.getChange)(o, filteredMA);

@@ -9,4 +9,12 @@ interface MADeviations {
     lowDeviation: number
 }
 
-export {MA, MADeviations}
+interface MAHashTable {
+    [key: string]: MA
+}
+
+interface VolatilityHashTable {
+    [key: string]: MA
+}
+
+export {MA, MADeviations, MAHashTable, VolatilityHashTable}
