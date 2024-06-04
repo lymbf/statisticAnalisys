@@ -2,7 +2,7 @@ import {SetupResult, TradeResult} from "../../Interfaces/Trades";
 import {Candle, Timestamp} from "../../Interfaces/Candle";
 import {compareTimestampsByDayPlus, getClosestTradingDay} from "../../Libs/Date/dateLib";
 import {fetchData, fetchDataset} from "../../Fetch/fetch";
-import {MA} from "../../Interfaces/MA";
+import {MA, MAHashTable, VolatilityHashTable} from "../../Interfaces/MA";
 import {HashTable} from "../../Interfaces/DataTypes";
 import {getMAByCCChange, getMAByPrice, getMADeviations} from "../Libs/Indicators/MovingAverage/movingAverage";
 import {max, mean, std} from "mathjs";
@@ -24,8 +24,8 @@ interface BotEngineOptions {
 
     indicatorsOptions: {
         ranges: number[],
-        MATable?: HashTable,
-        VolatilityTable?: HashTable
+        MATable?: MAHashTable,
+        VolatilityTable?: VolatilityHashTable
     }
 }
 
