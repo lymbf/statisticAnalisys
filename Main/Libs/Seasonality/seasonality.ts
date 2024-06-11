@@ -4,6 +4,12 @@ import {getOCChange} from "../../../Libs/Tools/candleOps";
 import {fetchData} from "../../../Fetch/fetch";
 import {mean, median} from "mathjs";
 import {months} from "../../../Constants/months";
+import {BasicStatistics} from "../../../Interfaces/Stats";
+
+interface SeasonalityStats {
+    rawData: Candle[],
+    data: BasicStatistics[]
+}
 
 const getMonthlySeasonalityChange = (data: Candle[], options?: {
     dailyData?: boolean,
@@ -20,6 +26,7 @@ const getMonthlySeasonalityChange = (data: Candle[], options?: {
         arr[m].push(getOCChange(c));
 
     })
+
     return arr.map(e => {
         if (!options) return mean(e)
         if (options.presentable) {
